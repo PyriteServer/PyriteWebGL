@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{F329B121-F81D-472D-961F-23C5304AAF97}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin</OutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="app.css" />
+    <None Include="config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Content Include="index.html" />
+    <Content Include="js\BinaryLoader.js" />
+    <Content Include="js\Detector.js" />
+    <Content Include="js\jquery-2.1.4.js" />
+    <Content Include="js\OBJLoader.js" />
+    <Content Include="js\OBJMTLLoader.js" />
+    <Content Include="js\Octree.js" />
+    <Content Include="js\OrbitControls.js" />
+    <Content Include="js\stats.min.js" />
+    <Content Include="js\three.min.js" />
+    <Content Include="textures\skybox\nx.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\skybox\ny.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\skybox\nz.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\skybox\px.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\skybox\py.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\skybox\pz.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="definitions\threejs\Octree.d.ts" />
+    <TypeScriptCompile Include="ts\config.ts" />
+    <TypeScriptCompile Include="definitions\jquery\jquery-tests.ts" />
+    <TypeScriptCompile Include="definitions\jquery\jquery.d.ts" />
+    <TypeScriptCompile Include="definitions\threejs\detector.d.ts" />
+    <TypeScriptCompile Include="definitions\threejs\stats.d.ts" />
+    <TypeScriptCompile Include="definitions\threejs\three-canvasrenderer.d.ts" />
+    <TypeScriptCompile Include="definitions\threejs\three-copyshader.d.ts" />
+    <TypeScriptCompile Include="definitions\threejs\three-css3drenderer.d.ts" />
+    <TypeScriptCompile Include="definitions\threejs\three-effectcomposer.d.ts" />
+    <TypeScriptCompile Include="definitions\threejs\three-maskpass.d.ts" />
+    <TypeScriptCompile Include="definitions\threejs\three-orbitcontrols.d.ts" />
+    <TypeScriptCompile Include="definitions\threejs\three-projector.d.ts" />
+    <TypeScriptCompile Include="definitions\threejs\three-renderpass.d.ts" />
+    <TypeScriptCompile Include="definitions\threejs\three-shaderpass.d.ts" />
+    <TypeScriptCompile Include="definitions\threejs\three-trackballcontrols.d.ts" />
+    <TypeScriptCompile Include="definitions\threejs\three.d.ts" />
+    <TypeScriptCompile Include="definitions\webaudioapi\waa.d.ts" />
+    <TypeScriptCompile Include="definitions\webrtc\MediaStream.d.ts" />
+    <TypeScriptCompile Include="definitions\webrtc\RTCPeerConnection.d.ts" />
+    <TypeScriptCompile Include="interfaces\config.ts" />
+    <TypeScriptCompile Include="ts\cubebounds.ts" />
+    <TypeScriptCompile Include="ts\Dictionary.ts" />
+    <TypeScriptCompile Include="ts\EBOLoader.ts" />
+    <TypeScriptCompile Include="ts\pyrite.ts" />
+    <TypeScriptCompile Include="ts\pyritecube.ts" />
+    <TypeScriptCompile Include="ts\pyritedetaillevel.ts" />
+    <TypeScriptCompile Include="ts\pyriteloader.ts" />
+    <TypeScriptCompile Include="ts\pyritequery.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="definitions\webaudioapi\readme.md" />
+    <Content Include="definitions\webrtc\readme.md" />
+    <Content Include="packages.config" />
+    <Content Include="definitions\jquery\jquery-tests.ts.tscparams" />
+    <None Include="jfoxwebapp.pubxml" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>PyriteClient</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyName>PyriteClient</AssemblyName>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets')" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>53563</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:53563/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptModuleKind>commonjs</TypeScriptModuleKind>
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>false</TypeScriptSourceMap>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+</Project>
