@@ -1,17 +1,11 @@
 ﻿class PyriteLoader {
     pyrite : Pyrite;
     query: PyriteQuery;
-    textureCache: Dictionary;
-    modelTextureMap: Dictionary;
-    objLoader: THREE.OBJLoader;
-
+    dl: PyriteDetailLevel;
 
     constructor(p: Pyrite) {
         this.pyrite = p;
         this.query = new PyriteQuery(this);
-        this.textureCache = new Dictionary([]);
-        this.modelTextureMap = new Dictionary([]);
-        this.objLoader = new THREE.OBJLoader();
     }
 
     load() {
@@ -19,20 +13,14 @@
         console.log("cube query complete");
     }
 
-
-    loadCubes(dl: PyriteDetailLevel) {
-        var cubes = dl.Cubes;
-        var that = this;
-
-        cubes.forEach((c) => {
-            c.load(this.pyrite.scene);
-        });
+    update(camera: THREE.Camera) {
+        if (this.dl) this.dl.update(camera);
     }
 
     onLoaded(dl: PyriteDetailLevel) {
         if (dl.Value == Config.lod) {
-            this.pyrite.dl = dl;
-            this.loadCubes(dl);
+            this.dl = dl;
+            this.dl.loadCubes();
         }
     }
 } 

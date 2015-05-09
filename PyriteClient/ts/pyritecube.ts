@@ -4,8 +4,10 @@
     Z;
     Obj: THREE.Object3D; // the mesh of the cube
     TextureKey: string;
-    Bbox: THREE.BoundingBox;
+    Bbox: THREE.BoundingBoxHelper;
     DetailLevel: PyriteDetailLevel;
+
+    //private boundingBoxHelper: THREE.BoundingBoxHelper;
 
     constructor(dl: PyriteDetailLevel) {
         this.DetailLevel = dl;
@@ -16,6 +18,7 @@
         if (render) {
             if (!scene.getChildByName(this.Obj.name)) {
                 scene.add(this.Obj);
+                
             }
         }
         else {
@@ -26,7 +29,7 @@
     }
 
     // loads the mesh and textures and adds them to the scene
-    load(scene : THREE.Scene) {
+    load(scene : THREE.Scene, octree: THREE.Octree) {
         var textureCoords = this.DetailLevel.TextureCoordinatesForCube(this.X, this.Y);
         var textureUrl = this.DetailLevel.Query.GetTexturePath(this.DetailLevel.Name, textureCoords.x, textureCoords.y);
         this.TextureKey = textureUrl;
@@ -60,12 +63,19 @@
                         material.map.needsUpdate = true;
                         material.needsUpdate = true;
                         child.material = material;
+                        child.visible = false;
+                        octree.add(child, null);
+                        octree.update();
                     }, function (error) { console.log(error); });
                 }
             });
-            that.DetailLevel.Octree.add(o, null);
+            this.Bbox = new THREE.BoundingBoxHelper(this.Obj, 0x00ff00);
+            this.Bbox.update();
+
+            //octree.add(this.Obj, null);
+            //o.visible = false;
+            scene.add(this.Bbox);
             scene.add(o);
-            //that.pyrite.render();
             console.log("loaded obj: " + geometryUrl);
         });
     }

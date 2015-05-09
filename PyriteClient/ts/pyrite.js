@@ -2,7 +2,6 @@
 var Pyrite = (function () {
     function Pyrite() {
         var _this = this;
-        this.clock = new THREE.Clock();
         this.meshes = [];
         this.meshesSearch = [];
         this.meshCountMax = 1000;
@@ -20,6 +19,7 @@ var Pyrite = (function () {
         this.rayCaster = new THREE.Raycaster();
         this.origin = new THREE.Vector3();
         this.direction = new THREE.Vector3();
+        this.clock = new THREE.Clock();
         this.loadTexture = function loadTexture(path) {
             var texture = new THREE.Texture(this.texture_placeholder);
             var material = new THREE.MeshBasicMaterial({ map: texture, overdraw: 0.5 });
@@ -111,12 +111,12 @@ var Pyrite = (function () {
         var container = document.createElement('div');
         document.body.appendChild(container);
         this.loader = new PyriteLoader(this);
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        this.camera.position.z = -20;
-        this.camera.position.y = 30;
-        this.camera.rotation.x = THREE.Math.degToRad(0);
-        this.camera.rotation.y = THREE.Math.degToRad(90);
-        this.camera.rotation.z = THREE.Math.degToRad(90);
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+        this.camera.position.z = -25;
+        //this.camera.position.y = 30;
+        //this.camera.rotation.x = THREE.Math.degToRad(0);
+        //this.camera.rotation.y = THREE.Math.degToRad(90);
+        //this.camera.rotation.z = THREE.Math.degToRad(90);
         //this.camera.rotateX(-60);
         //this.controls = new THREE.OrbitControls(this.camera);
         //this.controls.damping = 0.2;
@@ -185,25 +185,25 @@ var Pyrite = (function () {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         requestAnimationFrame(function () { return _this.render(); });
     };
-    Pyrite.prototype.render = function () {
+    Pyrite.prototype.animate = function () {
         var _this = this;
-        requestAnimationFrame(function () { return _this.render(); });
+        requestAnimationFrame(function () { return _this.animate(); });
         //this.modifyOctree();
         //this.searchOctree();
         var delta = this.clock.getDelta();
-        //this.controls.movementSpeed = 0.33;
         this.controls.update(delta);
-        this.renderer.render(this.scene, this.camera);
-        //this.octree.update();
-        if (this.dl)
-            this.dl.Octree.update();
+        this.loader.update(this.camera);
+        this.render();
         this.stats.update();
+    };
+    Pyrite.prototype.render = function () {
+        this.renderer.render(this.scene, this.camera);
     };
     Pyrite.prototype.start = function () {
         var _this = this;
         console.log("starting");
         this.loader.load();
-        requestAnimationFrame(function () { return _this.render(); });
+        requestAnimationFrame(function () { return _this.animate(); });
     };
     Pyrite.prototype.stop = function () {
         clearTimeout(this.timerToken);

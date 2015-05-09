@@ -17,14 +17,14 @@ var PyriteQuery = (function () {
                 for (var i = 0; i < detailLevels.length; i++) {
                     //var lod = new PyriteDetailLevel();
                     //lod.Name = that.levelsOfDetail[i].;
-                    var dl = new PyriteDetailLevel();
-                    dl.Octree = new THREE.Octree({
-                        undeferred: false,
-                        depthMax: Infinity,
-                        objectsThreshold: 8,
-                        overlapPct: 0.15,
-                        scene: _this.loader.pyrite.scene
-                    });
+                    var dl = new PyriteDetailLevel(_this.loader.pyrite.scene);
+                    //dl.Octree = new THREE.Octree({
+                    //    undeferred: false,
+                    //    depthMax: Infinity,
+                    //    objectsThreshold: 8,
+                    //    overlapPct: 0.15,
+                    //    scene: this.loader.pyrite.scene
+                    //});
                     dl.Name = detailLevels[i].name;
                     dl.Query = that;
                     var value = parseInt(dl.Name.substring(1));

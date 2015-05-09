@@ -4,6 +4,8 @@ declare module THREE {
     class Octree {
         constructor(...parameters: any[]);
 
+        nodeCount;
+
         update();
         add(object, options);
         addDeferred(object, options);

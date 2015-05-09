@@ -24,14 +24,14 @@
                     //var lod = new PyriteDetailLevel();
                     //lod.Name = that.levelsOfDetail[i].;
 
-                    var dl = new PyriteDetailLevel();
-                    dl.Octree = new THREE.Octree({
-                        undeferred: false,
-                        depthMax: Infinity,
-                        objectsThreshold: 8,
-                        overlapPct: 0.15,
-                        scene: this.loader.pyrite.scene
-                    });
+                    var dl = new PyriteDetailLevel(this.loader.pyrite.scene);
+                    //dl.Octree = new THREE.Octree({
+                    //    undeferred: false,
+                    //    depthMax: Infinity,
+                    //    objectsThreshold: 8,
+                    //    overlapPct: 0.15,
+                    //    scene: this.loader.pyrite.scene
+                    //});
                     dl.Name = detailLevels[i].name;
                     dl.Query = that;
 

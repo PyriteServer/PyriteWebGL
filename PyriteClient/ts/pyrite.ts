@@ -15,8 +15,6 @@ class Pyrite {
     stats: Stats;
     loader: PyriteLoader;
     octree: THREE.Octree;
-    dl: PyriteDetailLevel;
-    clock: THREE.Clock = new THREE.Clock();
 
     private
     meshes = [];
@@ -39,28 +37,27 @@ class Pyrite {
     direction = new THREE.Vector3();
     texture_placeholder;
     skyboxmesh: THREE.Mesh;
+    clock: THREE.Clock = new THREE.Clock();
 
     constructor() {
         var container = document.createElement('div');
         document.body.appendChild(container);
 
         this.loader = new PyriteLoader(this);
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
         this.camera.position.z = -25;
-        this.camera.position.y = 30;
-        this.camera.rotation.x = THREE.Math.degToRad(0);
-        this.camera.rotation.y = THREE.Math.degToRad(90);
-        this.camera.rotation.z = THREE.Math.degToRad(90);
+        //this.camera.position.y = 30;
+        //this.camera.rotation.x = THREE.Math.degToRad(0);
+        //this.camera.rotation.y = THREE.Math.degToRad(90);
+        //this.camera.rotation.z = THREE.Math.degToRad(90);
+
         //this.camera.rotateX(-60);
         //this.controls = new THREE.OrbitControls(this.camera);
         //this.controls.damping = 0.2;
-
-
         //this.controls.addEventListener('change', () => function () {
         //    this.renderer.render(this.scene, this.camera);
         //});
         this.scene = new THREE.Scene();
-
         var ambient = new THREE.AmbientLight(0x101030);
         this.scene.add(ambient);
 
@@ -147,29 +144,26 @@ class Pyrite {
         requestAnimationFrame(() => this.render());
     }
 
-    render() {
-        requestAnimationFrame(() => this.render());
-
+    animate() {
+        requestAnimationFrame(() => this.animate());
         //this.modifyOctree();
-
         //this.searchOctree();
         var delta = this.clock.getDelta();
-        //this.controls.movementSpeed = 0.33;
         this.controls.update(delta);
-        
-        this.renderer.render(this.scene, this.camera);
-
-        //this.octree.update();
-        if(this.dl) this.dl.Octree.update();
-
+        this.loader.update(this.camera);
+        this.render();
         this.stats.update();
+    }
+
+    render() {
+        this.renderer.render(this.scene, this.camera);
     }
 
     start() {
         console.log("starting");
 
         this.loader.load();
-        requestAnimationFrame(() => this.render());
+        requestAnimationFrame(() => this.animate());
     }
 
     stop() {
