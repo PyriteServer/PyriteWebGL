@@ -2,6 +2,7 @@
 var Pyrite = (function () {
     function Pyrite() {
         var _this = this;
+        this.clock = new THREE.Clock();
         this.meshes = [];
         this.meshesSearch = [];
         this.meshCountMax = 1000;
@@ -107,15 +108,21 @@ var Pyrite = (function () {
             
             */
         };
+        var container = document.createElement('div');
+        document.body.appendChild(container);
         this.loader = new PyriteLoader(this);
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-        this.camera.position.z = 30;
-        this.controls = new THREE.OrbitControls(this.camera);
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera.position.z = -20;
+        this.camera.position.y = 30;
+        this.camera.rotation.x = THREE.Math.degToRad(0);
+        this.camera.rotation.y = THREE.Math.degToRad(90);
+        this.camera.rotation.z = THREE.Math.degToRad(90);
+        //this.camera.rotateX(-60);
+        //this.controls = new THREE.OrbitControls(this.camera);
         //this.controls.damping = 0.2;
-        var that = this;
-        this.controls.addEventListener('change', function () {
-            that.renderer.render(that.scene, that.camera);
-        });
+        //this.controls.addEventListener('change', () => function () {
+        //    this.renderer.render(this.scene, this.camera);
+        //});
         this.scene = new THREE.Scene();
         var ambient = new THREE.AmbientLight(0x101030);
         this.scene.add(ambient);
@@ -126,7 +133,14 @@ var Pyrite = (function () {
         this.renderer.setClearColor(0xf0f0f0);
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(this.renderer.domElement);
+        container.appendChild(this.renderer.domElement);
+        this.controls = new THREE.FlyControls(this.camera);
+        this.controls.movementSpeed = 300;
+        this.controls.domElement = container;
+        this.controls.rollSpeed = Math.PI / 24;
+        //this.controls.rollSpeed = 0;
+        this.controls.autoForward = false;
+        this.controls.dragToLook = true;
         //// skybox
         //this.texture_placeholder = document.createElement('canvas');
         //this.texture_placeholder.width = 128;
@@ -149,7 +163,7 @@ var Pyrite = (function () {
         this.stats.domElement.style.position = 'absolute';
         this.stats.domElement.style.top = '0px';
         this.stats.domElement.style.zIndex = '100';
-        document.body.appendChild(this.stats.domElement);
+        container.appendChild(this.stats.domElement);
         //this.octree = new THREE.Octree({
         //    undeferred: false,
         //    depthMax: Infinity,
@@ -176,6 +190,9 @@ var Pyrite = (function () {
         requestAnimationFrame(function () { return _this.render(); });
         //this.modifyOctree();
         //this.searchOctree();
+        var delta = this.clock.getDelta();
+        //this.controls.movementSpeed = 0.33;
+        this.controls.update(delta);
         this.renderer.render(this.scene, this.camera);
         //this.octree.update();
         if (this.dl)

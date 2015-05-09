@@ -13,6 +13,7 @@ var EBOLoader = (function () {
         var vertexCount;
         tvertices: Array();
         tuvs: Array();
+        //var buffer = new THREE.BinaryTextureLoader
     };
     return EBOLoader;
 })();
