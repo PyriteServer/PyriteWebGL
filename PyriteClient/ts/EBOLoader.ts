@@ -6,7 +6,7 @@
 
     }
 
-    load(url, onLoad, onProgress, onError) {
+    load(url, onLoad, onProgress?, onError?) {
 
         var scope = this;
 
@@ -19,11 +19,18 @@
         }, onProgress, onError);
     }
 
-    parse(text) {
+    parse(text: string) {
         var vertexCount;
         tvertices: Array<THREE.Vector3>();
         tuvs: Array<THREE.Vector2>();
 
-        //var buffer = new THREE.BinaryTextureLoader
+        var buffer = new ArrayBuffer(text.length);
+        
+        var uint16buffer = new Uint16Array(buffer, 0, 1);
+        vertexCount = uint16buffer[0] * 3;
+
+        for (var i = 0; i < text.length; i++) {
+
+        }
     }
 } 

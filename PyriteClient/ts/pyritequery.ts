@@ -77,10 +77,11 @@
 
 
                 for (var i = 0; i < dl.Cubes.length; i++) {
-                    dl.Cubes[i] = new PyriteCube(dl);
-                    dl.Cubes[i].X = cubes[i][0];
-                    dl.Cubes[i].Y = cubes[i][1];
-                    dl.Cubes[i].Z = cubes[i][2];
+                    var cube = new PyriteCube(dl);
+                    cube.X = cubes[i][0];
+                    cube.Y = cubes[i][1];
+                    cube.Z = cubes[i][2];
+                    dl.Cubes[i] = cube;
                 }
 
                 this.loader.onLoaded(dl);

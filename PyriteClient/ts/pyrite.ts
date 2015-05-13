@@ -45,7 +45,7 @@ class Pyrite {
 
         this.loader = new PyriteLoader(this);
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-        this.camera.position.z = -25;
+        this.camera.position.z = 0;
         //this.camera.position.y = 30;
         //this.camera.rotation.x = THREE.Math.degToRad(0);
         //this.camera.rotation.y = THREE.Math.degToRad(90);
@@ -150,8 +150,8 @@ class Pyrite {
         //this.searchOctree();
         var delta = this.clock.getDelta();
         this.controls.update(delta);
-        this.loader.update(this.camera);
         this.render();
+        this.loader.update(this.camera);
         this.stats.update();
     }
 

@@ -635,7 +635,7 @@
 			
 		// initial update
 		
-		if ( this.object instanceof THREE.Object3D ) {
+		if ( this.object instanceof THREE.Object3D || this.object instanceof THREE.boundingSphere) {
 			
 			this.update();
 			
@@ -905,7 +905,8 @@
 			
 			// get object octant index
 			
-			indexOctant = this.getOctantIndex( object );
+			indexOctant = this.getOctantIndex(object);
+			console.log("indexOctant: " + indexOctant);
 			
 			// if object fully contained by an octant, add to subtree
 			if ( indexOctant > -1 && this.nodesIndices.length > 0 ) {
@@ -1824,7 +1825,8 @@
 			
 			var i, l,
 				node,
-				intersects;
+				intersects,
+				    results;
 			
 			// test intersects by parameters
 			
@@ -1852,7 +1854,7 @@
 					
 					node = this.nodesByIndex[ this.nodesIndices[ i ] ];
 					
-					objects = node.search( position, radius, objects, direction );
+					objects = node.search(position, radius, objects, direction);
 					
 				}
 				

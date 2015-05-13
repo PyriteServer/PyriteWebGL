@@ -13,7 +13,11 @@ var EBOLoader = (function () {
         var vertexCount;
         tvertices: Array();
         tuvs: Array();
-        //var buffer = new THREE.BinaryTextureLoader
+        var buffer = new ArrayBuffer(text.length);
+        var uint16buffer = new Uint16Array(buffer, 0, 1);
+        vertexCount = uint16buffer[0] * 3;
+        for (var i = 0; i < text.length; i++) {
+        }
     };
     return EBOLoader;
 })();
