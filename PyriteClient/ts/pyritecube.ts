@@ -17,6 +17,8 @@
     meshName: string;
     geometryBufferAltitudeTransform
 
+    UseEbo: boolean = true;
+
     //private boundingBoxHelper: THREE.BoundingBoxHelper;
 
     constructor(dl: PyriteDetailLevel) {
@@ -91,6 +93,7 @@
             this.PlaceholderMesh.translateY(this.WorldCoords.y);
             this.PlaceholderMesh.translateZ(this.WorldCoords.z);
             this.PlaceholderMesh.geometry.boundingSphere = new THREE.Sphere(this.WorldCoords, worldScale.x / 2);
+            //this.PlaceholderMesh.visible = false;
             scene.add(this.PlaceholderMesh);
             octree.add(this.PlaceholderMesh, { useFaces: false, useVertices: true});
             //octree.update();
@@ -121,49 +124,63 @@
             //    console.log(g.name);
             //});
 
-            var objLoader = new THREE.OBJLoader();
-            objLoader.load(geometryUrl + "?fmt=obj", (o) => {
-                if (!this.Meshes)
-                    this.Meshes = new Array(o.children.length);
-                var index = 0;
+            if (this.UseEbo) {
+                //var geometryBuffer = new GeometryBuffer();
+                //geometryBuffer.Process(geometryUrl, (mesh) => {
 
-                o.traverse((child) => {
-                    if (child instanceof THREE.Mesh) {
-                        
-                        child.name = that.meshName;
-                        that.Meshes[index] = child;
-                        index++;
-                        octree.add(child, { useFaces: false, useVertices: false});
-                        //octree.update();
+                //});
 
-                        scene.add(child);
-
-                        THREE.ImageUtils.crossOrigin = 'anonymous';
-                        THREE.ImageUtils.loadTexture(textureUrl, THREE.UVMapping, function (texture) {
-                            console.log("begin loadTexture callback");
-                            console.log("cube - " + that.meshName);
-                            console.log("cube texture key - " + that.TextureKey);
-                            console.log("texture url - " + texture.image.src);
-
-                            var material = new THREE.MeshBasicMaterial();
-                            material.map = texture;
-                            material.map.needsUpdate = true;
-                            material.needsUpdate = true;
-                            child.material = material;
-
-                        }, function (error) { console.log(error); });
-                    }
+                var loader = new EBOLoader();
+                loader.load(geometryUrl, (mesh) => {
+                    console.log(mesh.name);
                 });
-                
-                scene.add(o);
-                //that.Bbox = new THREE.BoundingBoxHelper(o, 0x00ff00);
-                //that.Bbox.update();
-                //scene.add(that.Bbox);
-                that.Obj = o;
-                that.Obj.name = that.meshName;
 
-                console.log("loaded obj: " + geometryUrl);
-            });
+            } else {
+                var objLoader = new THREE.OBJLoader();
+                objLoader.crossOrigin = 'anonymous';
+                objLoader.load(geometryUrl + "?fmt=obj", (o) => {
+                    if (!this.Meshes)
+                        this.Meshes = new Array(o.children.length);
+                    var index = 0;
+
+                    o.traverse((child) => {
+                        if (child instanceof THREE.Mesh) {
+                            child.geometry.computeVertexNormals();
+                            child.name = that.meshName;
+                            that.Meshes[index] = child;
+                            index++;
+                            octree.add(child, { useFaces: false, useVertices: false });
+                            //octree.update();
+
+                            scene.add(child);
+
+                            THREE.ImageUtils.crossOrigin = 'anonymous';
+                            THREE.ImageUtils.loadTexture(textureUrl, THREE.UVMapping, function (texture) {
+                                console.log("begin loadTexture callback");
+                                console.log("cube - " + that.meshName);
+                                console.log("cube texture key - " + that.TextureKey);
+                                console.log("texture url - " + texture.image.src);
+
+                                var material = new THREE.MeshBasicMaterial();
+                                material.map = texture;
+                                material.map.needsUpdate = true;
+                                material.needsUpdate = true;
+                                child.material = material;
+
+                            }, function (error) { console.log(error); });
+                        }
+                    });
+
+                    scene.add(o);
+                    //that.Bbox = new THREE.BoundingBoxHelper(o, 0x00ff00);
+                    //that.Bbox.update();
+                    //scene.add(that.Bbox);
+                    that.Obj = o;
+                    that.Obj.name = that.meshName;
+
+                    console.log("loaded obj: " + geometryUrl);
+                });
+            }
         }
     }
 } 

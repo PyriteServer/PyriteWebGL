@@ -15,6 +15,8 @@
         // let's try a jQuery call!
         var that = this;
         this.versionUrl = Config.server + "sets/" + Config.set + "/" + Config.version + "/";
+        //this.versionUrl = Config.server + "sets/" + Config.version + "/" + Config.set + "/";
+        $.ajaxSettings.crossDomain = true;
         $.get(this.versionUrl).done((r) => {
             console.log(r);
             if (r.status == 'OK') {

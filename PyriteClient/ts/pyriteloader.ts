@@ -23,4 +23,8 @@
             this.dl.loadCubes();
         }
     }
+
+    loadInitialLOD(dl: PyriteDetailLevel) {
+
+    }
 } 

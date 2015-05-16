@@ -112,17 +112,10 @@ var Pyrite = (function () {
         document.body.appendChild(container);
         this.loader = new PyriteLoader(this);
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-        this.camera.position.z = 0;
-        //this.camera.position.y = 30;
-        //this.camera.rotation.x = THREE.Math.degToRad(0);
-        //this.camera.rotation.y = THREE.Math.degToRad(90);
-        //this.camera.rotation.z = THREE.Math.degToRad(90);
-        //this.camera.rotateX(-60);
-        //this.controls = new THREE.OrbitControls(this.camera);
-        //this.controls.damping = 0.2;
-        //this.controls.addEventListener('change', () => function () {
-        //    this.renderer.render(this.scene, this.camera);
-        //});
+        this.camera.position.z = -300;
+        this.camera.rotateX(THREE.Math.degToRad(45));
+        this.camera.rotateY(THREE.Math.degToRad(90));
+        this.camera.rotateZ(THREE.Math.degToRad(45));
         this.scene = new THREE.Scene();
         var ambient = new THREE.AmbientLight(0x101030);
         this.scene.add(ambient);
@@ -142,6 +135,15 @@ var Pyrite = (function () {
         this.controls.autoForward = false;
         this.controls.dragToLook = true;
         //// skybox
+        this.setSkybox();
+        this.stats = new Stats();
+        this.stats.domElement.style.position = 'absolute';
+        this.stats.domElement.style.top = '0px';
+        this.stats.domElement.style.zIndex = '100';
+        container.appendChild(this.stats.domElement);
+        window.addEventListener('resize', function () { return _this.onWindowResize; }, false);
+    }
+    Pyrite.prototype.setSkybox = function () {
         //this.texture_placeholder = document.createElement('canvas');
         //this.texture_placeholder.width = 128;
         //this.texture_placeholder.height = 128;
@@ -159,25 +161,9 @@ var Pyrite = (function () {
         //this.skyboxmesh = new THREE.Mesh(new THREE.BoxGeometry(5000, 5000, 5000, 7, 7, 7), new THREE.MeshFaceMaterial(materials));
         //this.skyboxmesh.scale.x = - 1;
         //this.scene.add(this.skyboxmesh);
-        this.stats = new Stats();
-        this.stats.domElement.style.position = 'absolute';
-        this.stats.domElement.style.top = '0px';
-        this.stats.domElement.style.zIndex = '100';
-        container.appendChild(this.stats.domElement);
-        //this.octree = new THREE.Octree({
-        //    undeferred: false,
-        //    depthMax: Infinity,
-        //    objectsThreshold: 8,
-        //    overlapPct: 0.15,
-        //    scene: this.scene
-        //});
-        //this.searchMesh = new THREE.Mesh(
-        //    new THREE.SphereGeometry(this.radiusSearch),
-        //    new THREE.MeshBasicMaterial({ color: 0x00FF00, transparent: true, opacity: 0.4 })
-        //    );
-        //this.scene.add(this.searchMesh);
-        window.addEventListener('resize', function () { return _this.onWindowResize; }, false);
-    }
+        var sky = new THREE.Sky();
+        this.scene.add(sky.mesh);
+    };
     Pyrite.prototype.onWindowResize = function () {
         var _this = this;
         this.camera.aspect = window.innerWidth / window.innerHeight;
