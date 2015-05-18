@@ -118,7 +118,7 @@
             cube.IsVisible = true;
             cube.showMesh(true);
             that.VisibleCubes.push(cube);
-            if (!cube.Obj)
+            if (!cube.Meshes || cube.Meshes.length == 0)
                 cube.load(that.scene, that.Octree);
         }
 

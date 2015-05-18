@@ -104,7 +104,7 @@ var PyriteDetailLevel = (function () {
             cube.IsVisible = true;
             cube.showMesh(true);
             that.VisibleCubes.push(cube);
-            if (!cube.Obj)
+            if (!cube.Meshes || cube.Meshes.length == 0)
                 cube.load(that.scene, that.Octree);
         }
         for (var c = 0; c < that.cubesToHide.length; c++) {

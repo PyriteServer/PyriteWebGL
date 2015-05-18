@@ -112,43 +112,30 @@
             var geometryUrl = this.DetailLevel.Query.GetModelPath(this.DetailLevel.Name, this.X, this.Y, this.Z);
             var that = this;
 
-            // jasfox - was trying for loading EBO files
-            //var loader = new THREE.BinaryLoader();
-            //loader.load(geometryUrl, (o) => {
-            //    this.Obj = o;
-
-            //});
-
-            //var loader = new EBOLoader();
-            //loader.load(geometryUrl, (g) => {
-            //    console.log(g.name);
-            //});
+            if (!this.Meshes)
+                this.Meshes = new Array();
 
             if (this.UseEbo) {
-                //var geometryBuffer = new GeometryBuffer();
-                //geometryBuffer.Process(geometryUrl, (mesh) => {
-
-                //});
-
                 var loader = new EBOLoader();
                 loader.load(geometryUrl, (mesh) => {
-                    console.log(mesh.name);
+                    that.Meshes.push(mesh);
+                    //mesh.geometry.computeVertexNormals();
+                    mesh.name = that.meshName;
+                    octree.add(mesh, { useFaces: false, useVertices: false });
+                    scene.add(mesh);
+
+                    that.gettexture(textureUrl, that, mesh);
                 });
 
             } else {
                 var objLoader = new THREE.OBJLoader();
                 objLoader.crossOrigin = 'anonymous';
                 objLoader.load(geometryUrl + "?fmt=obj", (o) => {
-                    if (!this.Meshes)
-                        this.Meshes = new Array(o.children.length);
-                    var index = 0;
-
                     o.traverse((child) => {
                         if (child instanceof THREE.Mesh) {
                             child.geometry.computeVertexNormals();
                             child.name = that.meshName;
-                            that.Meshes[index] = child;
-                            index++;
+                            that.Meshes.push(child);
                             octree.add(child, { useFaces: false, useVertices: false });
                             //octree.update();
 
@@ -182,5 +169,22 @@
                 });
             }
         }
+    }
+
+    gettexture(textureUrl, that, mesh: THREE.Mesh) {
+        THREE.ImageUtils.crossOrigin = 'anonymous';
+        THREE.ImageUtils.loadTexture(textureUrl, THREE.UVMapping, function (texture) {
+            console.log("begin loadTexture callback");
+            console.log("cube - " + that.meshName);
+            console.log("cube texture key - " + that.TextureKey);
+            console.log("texture url - " + texture.image.src);
+
+            var material = new THREE.MeshBasicMaterial();
+            material.map = texture;
+            material.map.needsUpdate = true;
+            material.needsUpdate = true;
+            mesh.material = material;
+
+        }, function (error) { console.log(error); });
     }
 } 
