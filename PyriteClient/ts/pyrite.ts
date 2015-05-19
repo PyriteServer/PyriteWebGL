@@ -44,19 +44,9 @@ class Pyrite {
         document.body.appendChild(container);
 
         this.loader = new PyriteLoader(this);
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-        this.camera.position.z = 0;
-        //this.camera.position.y = 30;
-        //this.camera.rotation.x = THREE.Math.degToRad(0);
-        //this.camera.rotation.y = THREE.Math.degToRad(90);
-        //this.camera.rotation.z = THREE.Math.degToRad(90);
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
+        this.resetCamera();
 
-        //this.camera.rotateX(-60);
-        //this.controls = new THREE.OrbitControls(this.camera);
-        //this.controls.damping = 0.2;
-        //this.controls.addEventListener('change', () => function () {
-        //    this.renderer.render(this.scene, this.camera);
-        //});
         this.scene = new THREE.Scene();
         var ambient = new THREE.AmbientLight(0x101030);
         this.scene.add(ambient);
@@ -78,7 +68,31 @@ class Pyrite {
         //this.controls.rollSpeed = 0;
         this.controls.autoForward = false;
         this.controls.dragToLook = true;
+
         //// skybox
+        this.setSkybox();
+
+        this.stats = new Stats();
+        this.stats.domElement.style.position = 'absolute';
+        this.stats.domElement.style.top = '20px';
+        this.stats.domElement.style.left = '20px';
+        this.stats.domElement.style.zIndex = '100';
+        container.appendChild(this.stats.domElement);
+
+        window.addEventListener('resize', () => this.onWindowResize(), false);
+
+        var button = document.createElement("button");
+        button.name = "cameraresetbutton";
+        button.innerText = "Reset Camera";
+        button.style.position = 'absolute';
+        button.style.top = '100px';
+        button.style.left = '20px';
+        button.style.zIndex = '100';
+        button.addEventListener('click', () => this.resetCamera(), false);
+        container.appendChild(button);
+    }
+
+    setSkybox() {
         //this.texture_placeholder = document.createElement('canvas');
         //this.texture_placeholder.width = 128;
         //this.texture_placeholder.height = 128;
@@ -99,27 +113,14 @@ class Pyrite {
         //this.skyboxmesh.scale.x = - 1;
         //this.scene.add(this.skyboxmesh);
 
-        this.stats = new Stats();
-        this.stats.domElement.style.position = 'absolute';
-        this.stats.domElement.style.top = '0px';
-        this.stats.domElement.style.zIndex = '100';
-        container.appendChild(this.stats.domElement);
 
-        //this.octree = new THREE.Octree({
-        //    undeferred: false,
-        //    depthMax: Infinity,
-        //    objectsThreshold: 8,
-        //    overlapPct: 0.15,
-        //    scene: this.scene
-        //});
+        var sky = new THREE.Sky();
+        this.scene.add(sky.mesh);
+    }
 
-        //this.searchMesh = new THREE.Mesh(
-        //    new THREE.SphereGeometry(this.radiusSearch),
-        //    new THREE.MeshBasicMaterial({ color: 0x00FF00, transparent: true, opacity: 0.4 })
-        //    );
-        //this.scene.add(this.searchMesh);
-
-        window.addEventListener('resize', () => this.onWindowResize, false);
+    resetCamera() {
+        this.camera.position.set(0, 0, -300);
+        this.camera.rotation.set(THREE.Math.degToRad(45), THREE.Math.degToRad(90), THREE.Math.degToRad(45));
     }
 
     loadTexture = function loadTexture(path) {

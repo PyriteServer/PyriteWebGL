@@ -15,6 +15,7 @@
         // let's try a jQuery call!
         var that = this;
         this.versionUrl = Config.server + "sets/" + Config.set + "/" + Config.version + "/";
+        $.ajaxSettings.crossDomain = true;
         $.get(this.versionUrl).done((r) => {
             console.log(r);
             if (r.status == 'OK') {
@@ -25,13 +26,6 @@
                     //lod.Name = that.levelsOfDetail[i].;
 
                     var dl = new PyriteDetailLevel(this.loader.pyrite.scene);
-                    //dl.Octree = new THREE.Octree({
-                    //    undeferred: false,
-                    //    depthMax: Infinity,
-                    //    objectsThreshold: 8,
-                    //    overlapPct: 0.15,
-                    //    scene: this.loader.pyrite.scene
-                    //});
                     dl.Name = detailLevels[i].name;
                     dl.Query = that;
 

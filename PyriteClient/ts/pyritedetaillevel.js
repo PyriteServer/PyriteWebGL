@@ -22,7 +22,7 @@ var PyriteDetailLevel = (function () {
         this.cubesToHide = new Array(0);
         this.searchOctree = function searchOctree(camera) {
             // record start time
-            var timeStart = Date.now();
+            //var timeStart = Date.now();
             // search octree from search mesh position with search radius
             // optional third parameter: boolean, if should sort results by object when using faces in octree
             // optional fourth parameter: vector3, direction of search when using ray (assumes radius is distance/far of ray)
@@ -30,12 +30,14 @@ var PyriteDetailLevel = (function () {
             this.origin.copy(camera.position);
             //this.meshesSearch = this.Octree.search(this.origin, this.radiusSearch, true);
             this.direction = new THREE.Vector3(0, 0, -1);
+            this.direction.add(camera.position);
             this.direction.applyQuaternion(camera.quaternion);
             this.rayCaster.set(this.origin, this.direction);
             this.meshesSearch = this.Octree.search(this.rayCaster.ray.origin, this.radiusSearch, true, this.rayCaster.ray.direction);
-            //var intersections = this.rayCaster.intersectOctreeObjects(this.meshesSearch);
+            //this.meshesSearch = this.Octree.search(this.rayCaster.ray.origin, this.radiusSearch, true);
+            var intersections = this.rayCaster.intersectOctreeObjects(this.meshesSearch, true);
             // record end time
-            var timeEnd = Date.now();
+            //var timeEnd = Date.now();
             /*
             
             // results to console
@@ -104,7 +106,7 @@ var PyriteDetailLevel = (function () {
             cube.IsVisible = true;
             cube.showMesh(true);
             that.VisibleCubes.push(cube);
-            if (!cube.Obj)
+            if (!cube.Meshes || cube.Meshes.length == 0)
                 cube.load(that.scene, that.Octree);
         }
         for (var c = 0; c < that.cubesToHide.length; c++) {

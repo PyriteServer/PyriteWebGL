@@ -1907,6 +1907,7 @@ declare module THREE {
     export class OBJLoader {
         constructor(manager?: LoadingManager);
         manager: LoadingManager;
+        crossOrigin: string;
         load(url: string, onLoad?: (response: Object3D) => void, onProgress?: (event: any) => void, onError?: (event: any) => void): void;
 
     }

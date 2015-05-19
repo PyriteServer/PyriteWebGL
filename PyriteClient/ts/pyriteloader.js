@@ -17,6 +17,8 @@ var PyriteLoader = (function () {
             this.dl.loadCubes();
         }
     };
+    PyriteLoader.prototype.loadInitialLOD = function (dl) {
+    };
     return PyriteLoader;
 })();
 //# sourceMappingURL=pyriteloader.js.map
