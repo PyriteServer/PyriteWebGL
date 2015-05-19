@@ -3,38 +3,27 @@ var EBOLoader = (function () {
     }
     EBOLoader.prototype.load = function (url, onLoad, onProgress, onError) {
         var scope = this;
-        //var loader = new THREE.XHRLoader(scope.manager);
-        //loader.setCrossOrigin(this.crossOrigin);
-        //loader.load(url, function (text) {
-        //    onLoad(scope.parse(text));
-        //}, onProgress, onError);
         $.ajax({
             url: url,
             type: "GET",
             dataType: 'binary',
             responseType: 'arraybuffer',
-            processData: false
+            processData: false,
+            async: true
         }).done(function (result) {
             onLoad(scope.parse(new Uint8Array(result)));
         });
     };
     EBOLoader.prototype.parse = function (data) {
+        //var startTime = 
         var dataView = new jDataView(data, 0, data.length, true);
         var parser = new jBinary(dataView);
         var p, x, y, z;
-        var triangleCount = parser.read("uint16");
-        var vertexCount = triangleCount * 3;
+        var vertexCount = parser.read("uint16") * 3;
         var verticesIndex = new Int32Array(vertexCount);
-        //var vertices = new Array<THREE.Vector3>();
-        //var normals = new Array<THREE.Vector3>();
-        //var uvs = new Array<THREE.Vector2>();
-        var positions = new Float32Array(triangleCount * 3 * 3);
-        var normals = new Float32Array(triangleCount * 3 * 3);
-        var uvs = new Float32Array(triangleCount * 3 * 3);
-        var indices = new Int32Array(vertexCount);
-        //for (var i = 0; i < vertexCount; i++) {
-        //    indices[i] = i;
-        //}
+        var indices = new Uint16Array(vertexCount);
+        var vertices = new Array();
+        var uvsA = new Array();
         var bufferIndex;
         for (var i = 0; i < vertexCount; i++) {
             var nextByte = parser.read("byte");
@@ -46,75 +35,55 @@ var EBOLoader = (function () {
                     break;
                 case 64:
                     bufferIndex = parser.read("uint32");
-                    positions[i] = (positions[verticesIndex[bufferIndex]]);
-                    positions[i + 1] = (positions[verticesIndex[bufferIndex] + 1]);
-                    positions[i + 2] = (positions[verticesIndex[bufferIndex] + 2]);
-                    p = positions.length - 3;
+                    var vector = vertices[verticesIndex[bufferIndex]];
+                    vertices.push(vector);
+                    p = vertices.length - 1;
                     verticesIndex[i] = p;
-                    uvs[i] = parser.read("float");
-                    uvs[i + 1] = parser.read("float");
+                    var uv = new THREE.Vector2(parser.read("float32"), parser.read("float32"));
+                    uvsA.push(uv);
                     indices[i] = p;
                     break;
                 case 128:
                     break;
                 case 255:
-                    x = parser.read("float");
-                    y = parser.read("float");
-                    z = parser.read("float");
-                    positions[i] = x;
-                    positions[i + 1] = y;
-                    positions[i + 2] = z;
-                    p = positions.length - 3;
+                    x = parser.read("float32");
+                    y = parser.read("float32");
+                    z = parser.read("float32");
+                    var vector = new THREE.Vector3(x, y, z);
+                    vertices.push(vector);
+                    p = vertices.length - 1;
                     verticesIndex[i] = p;
-                    uvs[i] = parser.read("float");
-                    uvs[i + 1] = parser.read("float");
+                    var uv = new THREE.Vector2(parser.read("float32"), parser.read("float32"));
+                    uvsA.push(uv);
                     indices[i] = p;
                     break;
             }
         }
-        var pa = new THREE.Vector3();
-        var pb = new THREE.Vector3();
-        var pc = new THREE.Vector3();
-        var cb = new THREE.Vector3();
-        var ab = new THREE.Vector3();
-        for (var i = 0; i < vertexCount; i++) {
-            var ax = positions[i];
-            var ay = positions[i + 1];
-            var az = positions[i + 2];
-            var bx = positions[i + 3];
-            var by = positions[i + 4];
-            var bz = positions[i + 5];
-            var cx = positions[i + 6];
-            var cy = positions[i + 7];
-            var cz = positions[i + 8];
-            pa.set(ax, ay, az);
-            pb.set(bx, by, bz);
-            pc.set(cx, cy, cz);
-            cb.subVectors(pc, pb);
-            ab.subVectors(pa, pb);
-            cb.cross(ab);
-            cb.normalize();
-            normals[i] = cb.x;
-            normals[i + 1] = cb.y;
-            normals[i + 2] = cb.z;
-            normals[i + 3] = cb.x;
-            normals[i + 4] = cb.y;
-            normals[i + 5] = cb.z;
-            normals[i + 6] = cb.x;
-            normals[i + 7] = cb.y;
-            normals[i + 8] = cb.z;
+        //convert vertices to a float array
+        var positions = new Float32Array(vertices.length * 3);
+        for (var i = 0; i < vertices.length; i++) {
+            var vert = vertices[i];
+            var index = i * 3;
+            positions[index] = vert.x;
+            positions[index + 1] = vert.y;
+            positions[index + 2] = vert.z;
         }
-        dataView = null;
-        parser = null;
-        return this.createMesh(indices, positions, uvs, normals);
+        //convert uvs to a float array
+        var uvs = new Float32Array(uvsA.length * 2);
+        for (var i = 0; i < uvsA.length; i++) {
+            var uv = uvsA[i];
+            var index = i * 2;
+            uvs[index] = uv.x;
+            uvs[index + 1] = uv.y;
+        }
+        return this.createMesh(indices, positions, uvs);
     };
-    EBOLoader.prototype.createMesh = function (indices, vertices, uvs, normals) {
+    EBOLoader.prototype.createMesh = function (indices, vertices, uvs) {
         var geometry = new THREE.BufferGeometry();
         geometry.addAttribute("index", new THREE.BufferAttribute(indices, 1));
         geometry.addAttribute("position", new THREE.BufferAttribute(vertices, 3));
-        geometry.addAttribute("normal", new THREE.BufferAttribute(normals, 3));
         geometry.addAttribute("uv", new THREE.BufferAttribute(uvs, 2));
-        geometry.computeVertexNormals();
+        geometry.computeFaceNormals();
         return new THREE.Mesh(geometry);
     };
     return EBOLoader;

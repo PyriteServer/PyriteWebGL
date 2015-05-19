@@ -10,6 +10,7 @@
     PlaceholderMesh: THREE.Mesh; // this mesh is for the initial Octree load
     PlaceholderLoadedMaterial: THREE.Material;
     PlaceholderMaterial: THREE.Material;
+    DebugMaterial: THREE.Material;
     TextureKey: string;
     Bbox: THREE.BoundingBoxHelper;
     DetailLevel: PyriteDetailLevel;
@@ -18,6 +19,7 @@
     geometryBufferAltitudeTransform
 
     UseEbo: boolean = true;
+    Debug: boolean = false;
 
     //private boundingBoxHelper: THREE.BoundingBoxHelper;
 
@@ -61,6 +63,8 @@
                 }
                 if (this.PlaceholderMesh) {
                     this.PlaceholderMesh.visible = true;
+
+
                 }
             }
         }
@@ -95,78 +99,73 @@
             this.PlaceholderMesh.geometry.boundingSphere = new THREE.Sphere(this.WorldCoords, worldScale.x / 2);
             //this.PlaceholderMesh.visible = false;
             scene.add(this.PlaceholderMesh);
-            octree.add(this.PlaceholderMesh, { useFaces: false, useVertices: true});
+            octree.add(this.PlaceholderMesh, { useFaces: false, useVertices: true });
             //octree.update();
         } else {
-             // remove the placeholder mesh from the octree query - it will use the normal mesh from here on out
-            if (this.PlaceholderMesh) {
-                octree.remove(this.PlaceholderMesh);
-                this.PlaceholderMesh.visible = false;
-                this.PlaceholderMesh.material = this.PlaceholderLoadedMaterial;
-                
+            if (this.Debug) {
+
+                if (!this.DebugMaterial) {
+                    this.DebugMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.35 }); //blue
+                }
+
+                if (this.PlaceholderMesh) {
+                    //octree.remove(this.PlaceholderMesh);
+                    //this.PlaceholderMesh.visible = false;
+                    this.PlaceholderMesh.material = this.DebugMaterial;
+                }
             }
+            else {
+                // remove the placeholder mesh from the octree query - it will use the normal mesh from here on out
+                if (this.PlaceholderMesh) {
+                    octree.remove(this.PlaceholderMesh);
+                    this.PlaceholderMesh.visible = false;
+                    this.PlaceholderMesh.material = this.PlaceholderLoadedMaterial;
 
-            var textureCoords = this.DetailLevel.TextureCoordinatesForCube(this.X, this.Y);
-            var textureUrl = this.DetailLevel.Query.GetTexturePath(this.DetailLevel.Name, textureCoords.x, textureCoords.y);
-            this.TextureKey = textureUrl;
-            var geometryUrl = this.DetailLevel.Query.GetModelPath(this.DetailLevel.Name, this.X, this.Y, this.Z);
-            var that = this;
+                }
 
-            if (!this.Meshes)
-                this.Meshes = new Array();
+                var textureCoords = this.DetailLevel.TextureCoordinatesForCube(this.X, this.Y);
+                var textureUrl = this.DetailLevel.Query.GetTexturePath(this.DetailLevel.Name, textureCoords.x, textureCoords.y);
+                this.TextureKey = textureUrl;
+                var geometryUrl = this.DetailLevel.Query.GetModelPath(this.DetailLevel.Name, this.X, this.Y, this.Z);
+                var that = this;
 
-            if (this.UseEbo) {
-                var loader = new EBOLoader();
-                loader.load(geometryUrl, (mesh) => {
-                    that.Meshes.push(mesh);
-                    //mesh.geometry.computeVertexNormals();
-                    mesh.name = that.meshName;
-                    octree.add(mesh, { useFaces: false, useVertices: false });
-                    scene.add(mesh);
+                if (!this.Meshes)
+                    this.Meshes = new Array();
 
-                    that.gettexture(textureUrl, that, mesh);
-                });
-
-            } else {
-                var objLoader = new THREE.OBJLoader();
-                objLoader.crossOrigin = 'anonymous';
-                objLoader.load(geometryUrl + "?fmt=obj", (o) => {
-                    o.traverse((child) => {
-                        if (child instanceof THREE.Mesh) {
-                            child.geometry.computeVertexNormals();
-                            child.name = that.meshName;
-                            that.Meshes.push(child);
-                            octree.add(child, { useFaces: false, useVertices: false });
-                            //octree.update();
-
-                            scene.add(child);
-
-                            THREE.ImageUtils.crossOrigin = 'anonymous';
-                            THREE.ImageUtils.loadTexture(textureUrl, THREE.UVMapping, function (texture) {
-                                console.log("begin loadTexture callback");
-                                console.log("cube - " + that.meshName);
-                                console.log("cube texture key - " + that.TextureKey);
-                                console.log("texture url - " + texture.image.src);
-
-                                var material = new THREE.MeshBasicMaterial();
-                                material.map = texture;
-                                material.map.needsUpdate = true;
-                                material.needsUpdate = true;
-                                child.material = material;
-
-                            }, function (error) { console.log(error); });
-                        }
+                if (this.UseEbo) {
+                    var loader = new EBOLoader();
+                    loader.load(geometryUrl + "?fmt=ebo", (mesh) => {
+                        that.Meshes.push(mesh);
+                        mesh.name = that.meshName;
+                        octree.add(mesh, { useFaces: false, useVertices: false });
+                        //octree.update();
+                        scene.add(mesh);
+                        that.gettexture(textureUrl, that, mesh);
                     });
 
-                    scene.add(o);
-                    //that.Bbox = new THREE.BoundingBoxHelper(o, 0x00ff00);
-                    //that.Bbox.update();
-                    //scene.add(that.Bbox);
-                    that.Obj = o;
-                    that.Obj.name = that.meshName;
+                } else {
+                    var objLoader = new THREE.OBJLoader();
+                    objLoader.crossOrigin = 'anonymous';
+                    objLoader.load(geometryUrl + "?fmt=obj", (o) => {
+                        o.traverse((child) => {
+                            if (child instanceof THREE.Mesh) {
+                                child.geometry.computeVertexNormals();
+                                child.name = that.meshName;
+                                that.Meshes.push(child);
+                                octree.add(child, { useFaces: false, useVertices: false });
+                                scene.add(child);
+                                that.gettexture(textureUrl, that, child);
+                            }
+                        });
 
-                    console.log("loaded obj: " + geometryUrl);
-                });
+                        //scene.add(o);
+
+                        that.Obj = o;
+                        that.Obj.name = that.meshName;
+
+                        console.log("loaded obj: " + geometryUrl);
+                    });
+                }
             }
         }
     }

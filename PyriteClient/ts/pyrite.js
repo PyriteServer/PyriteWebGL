@@ -111,11 +111,8 @@ var Pyrite = (function () {
         var container = document.createElement('div');
         document.body.appendChild(container);
         this.loader = new PyriteLoader(this);
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-        this.camera.position.z = -300;
-        this.camera.rotateX(THREE.Math.degToRad(45));
-        this.camera.rotateY(THREE.Math.degToRad(90));
-        this.camera.rotateZ(THREE.Math.degToRad(45));
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
+        this.resetCamera();
         this.scene = new THREE.Scene();
         var ambient = new THREE.AmbientLight(0x101030);
         this.scene.add(ambient);
@@ -138,10 +135,20 @@ var Pyrite = (function () {
         this.setSkybox();
         this.stats = new Stats();
         this.stats.domElement.style.position = 'absolute';
-        this.stats.domElement.style.top = '0px';
+        this.stats.domElement.style.top = '20px';
+        this.stats.domElement.style.left = '20px';
         this.stats.domElement.style.zIndex = '100';
         container.appendChild(this.stats.domElement);
-        window.addEventListener('resize', function () { return _this.onWindowResize; }, false);
+        window.addEventListener('resize', function () { return _this.onWindowResize(); }, false);
+        var button = document.createElement("button");
+        button.name = "cameraresetbutton";
+        button.innerText = "Reset Camera";
+        button.style.position = 'absolute';
+        button.style.top = '100px';
+        button.style.left = '20px';
+        button.style.zIndex = '100';
+        button.addEventListener('click', function () { return _this.resetCamera(); }, false);
+        container.appendChild(button);
     }
     Pyrite.prototype.setSkybox = function () {
         //this.texture_placeholder = document.createElement('canvas');
@@ -163,6 +170,10 @@ var Pyrite = (function () {
         //this.scene.add(this.skyboxmesh);
         var sky = new THREE.Sky();
         this.scene.add(sky.mesh);
+    };
+    Pyrite.prototype.resetCamera = function () {
+        this.camera.position.set(0, 0, -300);
+        this.camera.rotation.set(THREE.Math.degToRad(45), THREE.Math.degToRad(90), THREE.Math.degToRad(45));
     };
     Pyrite.prototype.onWindowResize = function () {
         var _this = this;

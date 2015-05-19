@@ -147,7 +147,7 @@
       
         // record start time
 			
-        var timeStart = Date.now();
+        //var timeStart = Date.now();
 			
         // search octree from search mesh position with search radius
         // optional third parameter: boolean, if should sort results by object when using faces in octree
@@ -158,14 +158,16 @@
         //this.meshesSearch = this.Octree.search(this.origin, this.radiusSearch, true);
 
         this.direction = new THREE.Vector3(0, 0, -1);
+        this.direction.add(camera.position);
         this.direction.applyQuaternion(camera.quaternion);
         this.rayCaster.set(this.origin, this.direction);
         this.meshesSearch = this.Octree.search(this.rayCaster.ray.origin, this.radiusSearch, true, this.rayCaster.ray.direction);
-        //var intersections = this.rayCaster.intersectOctreeObjects(this.meshesSearch);
+        //this.meshesSearch = this.Octree.search(this.rayCaster.ray.origin, this.radiusSearch, true);
+        var intersections = this.rayCaster.intersectOctreeObjects(this.meshesSearch, true);
 			
         // record end time
 			
-        var timeEnd = Date.now();
+        //var timeEnd = Date.now();
 			
         /*
     	
