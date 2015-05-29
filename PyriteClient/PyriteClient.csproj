@@ -19,18 +19,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="app.css" />
-    <None Include="config.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <Content Include="index.html" />
     <Content Include="js\BinaryLoader.js" />
     <Content Include="js\Detector.js" />
+    <Content Include="js\FlyControls.js" />
+    <Content Include="js\jbinary.js" />
+    <Content Include="js\jdataview.js" />
     <Content Include="js\jquery-2.1.4.js" />
+    <Content Include="js\jquery.binarytransport.js" />
     <Content Include="js\OBJLoader.js" />
     <Content Include="js\OBJMTLLoader.js" />
     <Content Include="js\Octree.js" />
     <Content Include="js\OrbitControls.js" />
+    <Content Include="js\SkyShader.js" />
     <Content Include="js\stats.min.js" />
+    <Content Include="js\threadpool.js" />
+    <Content Include="js\threadpool.min.js" />
     <Content Include="js\three.min.js" />
     <Content Include="textures\skybox\nx.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -53,7 +57,14 @@
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="definitions\jbinary\jbinary-tests.ts" />
+    <TypeScriptCompile Include="definitions\jbinary\jbinary.d.ts" />
+    <TypeScriptCompile Include="definitions\jdataview\jdataview-tests.ts" />
+    <TypeScriptCompile Include="definitions\jdataview\jdataview.d.ts" />
+    <TypeScriptCompile Include="definitions\threadpool\threadpool.d.ts" />
     <TypeScriptCompile Include="definitions\threejs\Octree.d.ts" />
+    <TypeScriptCompile Include="definitions\threejs\sky.d.ts" />
+    <TypeScriptCompile Include="definitions\threejs\three-flycontrols.d.ts" />
     <TypeScriptCompile Include="ts\config.ts" />
     <TypeScriptCompile Include="definitions\jquery\jquery-tests.ts" />
     <TypeScriptCompile Include="definitions\jquery\jquery.d.ts" />
@@ -74,9 +85,15 @@
     <TypeScriptCompile Include="definitions\webrtc\MediaStream.d.ts" />
     <TypeScriptCompile Include="definitions\webrtc\RTCPeerConnection.d.ts" />
     <TypeScriptCompile Include="interfaces\config.ts" />
+    <TypeScriptCompile Include="ts\cube.ts" />
     <TypeScriptCompile Include="ts\cubebounds.ts" />
+    <TypeScriptCompile Include="ts\cubecontainer.ts" />
+    <TypeScriptCompile Include="ts\cubeworker.ts" />
     <TypeScriptCompile Include="ts\Dictionary.ts" />
     <TypeScriptCompile Include="ts\EBOLoader.ts" />
+    <TypeScriptCompile Include="ts\Octree.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="ts\pyrite.ts" />
     <TypeScriptCompile Include="ts\pyritecube.ts" />
     <TypeScriptCompile Include="ts\pyritedetaillevel.ts" />
@@ -96,6 +113,7 @@
       <DependentUpon>web.config</DependentUpon>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
   </PropertyGroup>
