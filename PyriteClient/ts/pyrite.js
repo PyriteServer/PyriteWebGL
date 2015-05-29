@@ -108,6 +108,28 @@ var Pyrite = (function () {
             
             */
         };
+        var queries = {};
+        $.each(document.location.search.substr(1).split('&'), function (c, q) {
+            var i = q.split('=');
+            if (i[0]) {
+                queries[i[0].toString()] = i[1].toString();
+            }
+        });
+        if (queries['maxlod']) {
+            Config.maxlod = parseInt(queries['maxlod']);
+        }
+        if (queries['set']) {
+            Config.set = queries['set'];
+        }
+        if (queries['version']) {
+            Config.version = queries['version'];
+        }
+        if (queries['fmt']) {
+            Config.fmt = queries['fmt'];
+        }
+        if (queries['debug']) {
+            Config.debug = parseInt(queries['debug']);
+        }
         var container = document.createElement('div');
         document.body.appendChild(container);
         this.loader = new PyriteLoader(this);
