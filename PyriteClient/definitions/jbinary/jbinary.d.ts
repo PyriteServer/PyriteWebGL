@@ -19,7 +19,8 @@ declare class jBinary
     static saveAs(destination:any, mimeType?:string, callback?: (error:string, data:any) => any):any;
     static toURI(mimeType?:string):any;
 
-    constructor(data:Array<number>);
+    constructor(data: Array<number>);
+    constructor(data: jDataView);
     constructor(data:jDataView, typeSet:Object);
     constructor(bufferSize:number, typeSet:Object);
 
