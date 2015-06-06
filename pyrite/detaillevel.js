@@ -106,12 +106,13 @@ var PyriteDetailLevel = (function () {
         var _this = this;
         var initCount = 0;
         var cubes = this.Cubes;
-        var that = this;
         cubes.forEach(function (c) {
-            c.cube.worldCoords = _this.GetWorldCoordinatesForCube(c.cube);
-            c.init(_this.scene, _this.Octree, true);
+            c.cube.worldCoords = _this.GetWorldCoordinatesForCube(c);
+            c.init(_this.scene, _this.Octree, Config.debug == 1);
             c.load(function () {
                 //that.textureLoadingQueue.push(c);
+                var key = _this.Value + ',' + c.meshName;
+                _this.Query.loader.activeCubes.put(key, c);
             });
             //that.threadPool.run(function () { c.load() }, {});
             //that.threadPool.run(["ts/pyritecube.js"], function (param, done) {

@@ -16,19 +16,24 @@ var PyriteLoader = (function () {
     }
     PyriteLoader.prototype.load = function (camera) {
         this.camera = camera;
-        if (typeof Config.lod !== 'undefined') {
-            this.singleLod = true;
-            this.query.loadLod(Config.lod);
-        }
-        else if (this.loadType == LoadType.CameraDetection || this.loadType == LoadType.Octree) {
+        // if (typeof Config.lod !== 'undefined') {
+        //     this.singleLod = true;
+        //     this.query.loadLod(Config.lod);
+        // }
+        // else if (this.loadType == LoadType.CameraDetection || this.loadType == LoadType.Octree) {
             var _this = this;
+            
             this.query.loadAll(function (){
+                if(Config.showcubes == 1){
+                    var dl = _this.query.DetailLevels[Config.lod - 1];
+                    dl.loadCubes();
+                }
                 _this.loadCamCubes(_this.camera);
             });
             //this.query.load3x3("L2", this.pyrite.camera.position);
-        }
-        else {
-        }
+        // }
+        // else {
+        // }
     };
     PyriteLoader.prototype.update = function (camera) {
         if (this.singleLod)

@@ -47,6 +47,10 @@
         if (queries['debug']) {
             Config.debug = parseInt(queries['debug']);
         }
+        
+        if (queries['showcubes']) {
+            Config.showcubes = parseInt(queries['showcubes']);
+        }
 
         var container = document.createElement('div');
         document.body.appendChild(container);
