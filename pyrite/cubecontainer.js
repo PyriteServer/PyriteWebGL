@@ -1,6 +1,7 @@
 var CubeContainer = (function () {
     function CubeContainer(detailLevel) {
         this.useEbo = false;
+        this.useCtm = false;
         this.isLoaded = false;
         this.isLoading = false;
         this.initialized = false;
@@ -47,7 +48,29 @@ var CubeContainer = (function () {
         var textureUrl = this.detailLevel.Query.GetTexturePath(this.detailLevel.Name, textureCoords.x, textureCoords.y);
         var geometryUrl = this.detailLevel.Query.GetModelPath(this.detailLevel.Name, this.cube.x, this.cube.y, this.cube.z);
         var that = this;
-        if (this.useEbo) {
+        if (this.useCtm) {
+            var loader = new THREE.CTMLoader(true);
+            document.body.appendChild(loader.statusDomElement);
+            loader.load(geometryUrl + "?fmt=ctm",function (geometry) {
+                var material1 = new THREE.MeshLambertMaterial( { color: 0xf0ffff } );
+                var mesh = new THREE.Mesh(geometry, material1);
+                that.mesh = mesh;
+                mesh.name = that.meshName;
+                that.gettexture(textureUrl, mesh, function () {
+                    that.scene.remove(that.placeholderMesh);
+                    that.scene.add(mesh);
+                    that.isLoaded = true;
+                    that.isLoading = false;
+                    that.detailLevel.Query.addActiveCube(that);
+                    if (that.debug) {
+                        that.addBoundingBox(mesh, that);
+                    }
+                    //var meshJson = mesh.toJSON();
+                    //window.localStorage.setItem(that.meshName, JSON.stringify(meshJson));
+                    callback();
+                }, {useWorker: true});
+            } );
+        } else if (this.useEbo) {
             //window.localStorage.clear();
             //var meshData = window.localStorage.getItem(that.meshName);
             //if (meshData) {

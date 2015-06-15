@@ -178,6 +178,7 @@ var PyriteQuery = (function () {
                         cubeContainer.cube.y = cubes[i][1];
                         cubeContainer.cube.z = cubes[i][2];
                         cubeContainer.useEbo = Config.fmt == "ebo";
+                        cubeContainer.useCtm = Config.fmt == "ctm";
                         cubeContainer.debug = Config.debug == 1;
                         dl.Cubes.push(cubeContainer);
                     }
@@ -217,6 +218,7 @@ var PyriteQuery = (function () {
                             cubeContainer.cube.y = cubes[i][1];
                             cubeContainer.cube.z = cubes[i][2];
                             cubeContainer.useEbo = Config.fmt == "ebo";
+                            cubeContainer.useCtm = Config.fmt == "ctm";
                             cubeContainer.debug = Config.debug == 1;
                             dl.Cubes.push(cubeContainer);
                         }
@@ -255,6 +257,7 @@ var PyriteQuery = (function () {
                                 cubeContainer.cube.y = y;
                                 cubeContainer.cube.z = z;
                                 cubeContainer.useEbo = Config.fmt == "ebo";
+                                cubeContainer.useCtm = Config.fmt == "ctm";
                                 cubeContainer.debug = Config.debug == 1;
                                 detailLevel.Cubes.push(cubeContainer);
                             }
