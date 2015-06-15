@@ -19,26 +19,6 @@ THREE.CTMLoader.prototype.constructor = THREE.CTMLoader;
 
 // Load multiple CTM parts defined in JSON
 
-THREE.CTMLoader.prototype.loadCtmFile = function(url, callback, parameters) {
-	parameters = parameters || {};
-	var scope = this;
-	var materials = [], geometries = [], counter = 0;
-	function callbackFinal( geometry ) {
-
-					counter += 1;
-
-					geometries.push( geometry );
-
-					if ( counter === 1 ) {
-						callback( geometries, materials );
-					}
-
-				}		
-	
-	var parametersPart = { useWorker: parameters.useWorker };
-	scope.load( url, callbackFinal, parametersPart );
-};
-
 THREE.CTMLoader.prototype.loadParts = function( url, callback, parameters ) {
 
 	parameters = parameters || {};
