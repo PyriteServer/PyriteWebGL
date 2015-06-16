@@ -25,8 +25,14 @@ var PyriteLoader = (function () {
             
             this.query.loadAll(function (){
                 if(Config.showcubes == 1){
-                    var dl = _this.query.DetailLevels[Config.lod - 1];
-                    dl.loadCubes();
+                    for(var i =0; i < _this.query.DetailLevels.length; i++){
+                        var dl = _this.query.DetailLevels[i];
+                        if(dl.Value == Config.lod){
+                            dl.loadCubes();
+                        }
+                    }
+                    // var dl = _this.query.DetailLevels[Config.lod - 1];
+                    // dl.loadCubes();
                 }
                 _this.loadCamCubes(_this.camera);
             });
@@ -74,13 +80,13 @@ var PyriteLoader = (function () {
     };
     PyriteLoader.prototype.loadCamCubes = function (camera) {
         var octIntCubeDict = new Dictionary(true);
+        var removeCubeDict = new Dictionary(true);
         var boundBoxVector = new THREE.Vector3(1, 1, 1);
         
         for (var dl = this.query.DetailLevels.length - 1; dl > 0; dl--) {
-            if(dl > Config.maxlod) continue; // skip over processing the detail level if it is great than the max lod
-            
-            var dl2 = dl - 1;
             var pLevel = this.query.DetailLevels[dl];
+            if(pLevel.Value < Config.maxlod) continue; // skip over processing the detail level if it is great than the max lod
+            var dl2 = dl - 1;
             var pLevel2 = this.query.DetailLevels[dl2];
             var camPos = camera.position;     
             var cPos = pLevel.GetCubeForWorldCoordinates(camPos);
@@ -110,7 +116,7 @@ var PyriteLoader = (function () {
                 octIntCubeDict.put(cubeKey, octIntCubes[i]);
             }
             
-            if(dl2 < Config.maxlod){
+            if(pLevel2.Value >= Config.maxlod){
                 var octIntCubes2 = pLevel.Octree.allIntersections(new THREE.Box3(minVector2, maxVector2));
                 // Replace Intersecting Higher Detail Cubes
                 for(var i = 0; i < octIntCubes2.length; i++){
@@ -118,6 +124,7 @@ var PyriteLoader = (function () {
                     var cubeKey = dl + ',' + pCube.meshName;
                     if(octIntCubeDict.contains(cubeKey)){
                         octIntCubeDict.remove(cubeKey);
+                        removeCubeDict.put(cubeKey, pCube); // mark for unloading
                         var cubeW = pLevel.GetWorldCoordinatesForCube(pCube);
                         var cubeL = pLevel2.GetCubeForWorldCoordinates(cubeW).cube;
                         var cubeV = new THREE.Vector3(cubeL.x + 0.5, cubeL.y + 0.5, cubeL.z + 0.5);
@@ -140,59 +147,13 @@ var PyriteLoader = (function () {
         }
         
         var _this = this;
-        // var cubeCounter = 0;
-        // //var octIntlist = new Array(octIntCubeDict.values);
-        // if(octIntCubeDict.length() > 0){
-        //     octIntCubeDict.iterate(function(k, v){
-        //         cubeCounter++;
-        //         var intersection = v;
-        //         var pCube = intersection.object;
-        //         var cubeKey = k;
-        //         var detailLevel = pCube.detailLevel.Value - 1;
-        //         var pLevel = _this.query.DetailLevels[detailLevel];
-        //         var cubePos = pCube.cube.worldCoords;
-        //         
-        //         if(_this.activeCubes.contains(cubeKey)){
-        //             //pCube.init(_this.pyrite.scene, pLevel.Octree, true);
-        //             //pCube.load();
-        //         }else{
-        //             pCube.init(_this.pyrite.scene, pLevel.Octree, true);
-        //             pCube.load(function (){});
-        //         }
-        //     });
-        // }
-//         if(this.activeCubes.length() > 0){
-//             this.activeCubes.iterate(function(k, v){
-//                 if(octIntCubeDict.contains(k)){
-//                     var pCube = octIntCubeDict.get(k).object;
-//                     var detailLevel = pCube.detailLevel.Value - 1;
-//                     var pLevel = _this.query.DetailLevels[detailLevel];
-//                     octIntCubeDict.remove(k); // remove it from this collection, since we're handling the load here
-//                     // don't do anything unless we need to reload the cube
-//                     if(!pCube.isLoaded){
-// 
-//                         pCube.init(_this.pyrite.scene, pLevel.Octree, true);
-//                         pCube.load(function (){
-//                             //_this.activeCubes.put(k, pCube);
-//                         });
-//                     }
-//                 }
-//                 else{
-//                     //if()
-//                     var pCube = v;
-//                     _this.activeCubes.remove(k);
-//                     _this.inactiveCubes.put(k, v);
-//                     //pCube.unload();
-//                 }
-//             });
-//         }
+
         if(octIntCubeDict.length() > 0){
             octIntCubeDict.iterate(function(k, v){
                 var intersection = v;
                 var pCube = intersection.object;
-                //var cubeKey = k;
-                var detailLevel = pCube.detailLevel.Value - 1;
-                var pLevel = _this.query.DetailLevels[detailLevel];
+                var dlIndex = _this.query.DetailLevels.indexOf(pCube.detailLevel);
+                var pLevel = _this.query.DetailLevels[dlIndex];
                 //var cubePos = pCube.cube.worldCoords;
                 if(!pCube.isLoaded){
                     pCube.init(_this.pyrite.scene, pLevel.Octree, false);
@@ -200,6 +161,12 @@ var PyriteLoader = (function () {
                         _this.activeCubes.put(k, pCube);
                     });
                 }
+            });
+        }
+        
+        if(removeCubeDict.length() > 0){
+            removeCubeDict.iterate(function(k, v){
+                v.unload();
             });
         }
 
