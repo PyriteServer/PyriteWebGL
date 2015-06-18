@@ -8,6 +8,11 @@ var PyriteDetailLevel = (function () {
         this.ready = false;
         this.lod = new THREE.LOD();
         this.scene = scene;
+        this.WorldBoundsMin;
+        this.WorldBoundsMax;
+        this.distance;
+        this.UpgradeDistance;
+        this.DowngradeDistance;
         //this.worker = new Worker('dlworker.js');
     }
     PyriteDetailLevel.prototype.isHighestLod = function () {

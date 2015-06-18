@@ -10,6 +10,7 @@ var CubeContainer = (function () {
         this.upgrading = false;
         this.textureQueue = new Array();
         this.detailLevel = detailLevel;
+        this.mesh;
     }
     CubeContainer.prototype.init = function (scene, octree, showPlaceHolder) {
         this.scene = scene;
@@ -28,6 +29,7 @@ var CubeContainer = (function () {
         this.placeholderMesh.translateY(this.cube.worldCoords.y);
         this.placeholderMesh.translateZ(this.cube.worldCoords.z);
         this.placeholderMesh.geometry.computeBoundingBox();
+        this.placeholderMesh.geometry.computeBoundingSphere();
         if (show) {
             this.scene.add(this.placeholderMesh);
         }
@@ -43,61 +45,45 @@ var CubeContainer = (function () {
         if (!this.initialized)
             throw "Cube container must be initialized before loading.";
         this.isLoading = true;
-        
         var textureCoords = this.detailLevel.TextureCoordinatesForCube(this.cube.x, this.cube.y);
         var textureUrl = this.detailLevel.Query.GetTexturePath(this.detailLevel.Name, textureCoords.x, textureCoords.y);
         var geometryUrl = this.detailLevel.Query.GetModelPath(this.detailLevel.Name, this.cube.x, this.cube.y, this.cube.z);
-        var that = this;
+        var _this = this;
         if (this.useCtm) {
             var loader = new THREE.CTMLoader(true);
             document.body.appendChild(loader.statusDomElement);
             loader.load(geometryUrl + "?fmt=ctm",function (geometry) {
                 var material1 = new THREE.MeshLambertMaterial( { color: 0xf0ffff } );
                 var mesh = new THREE.Mesh(geometry, material1);
-                that.mesh = mesh;
-                mesh.name = that.meshName;
-                that.gettexture(textureUrl, mesh, function () {
-                    that.scene.remove(that.placeholderMesh);
-                    that.scene.add(mesh);
-                    that.isLoaded = true;
-                    that.isLoading = false;
-                    that.detailLevel.Query.addActiveCube(that);
-                    if (that.debug) {
-                        that.addBoundingBox(mesh, that);
+                _this.mesh = mesh;
+                mesh.name = _this.meshName;
+                _this.gettexture(textureUrl, mesh, function () {
+                    _this.scene.remove(_this.placeholderMesh);
+                    _this.scene.add(mesh);
+                    _this.isLoaded = true;
+                    _this.isLoading = false;
+                    _this.detailLevel.Query.addActiveCube(_this);
+                    if (_this.debug) {
+                        _this.addBoundingBox(mesh, _this);
                     }
-                    //var meshJson = mesh.toJSON();
-                    //window.localStorage.setItem(that.meshName, JSON.stringify(meshJson));
                     callback();
                 }, {useWorker: true});
             } );
         } else if (this.useEbo) {
-            //window.localStorage.clear();
-            //var meshData = window.localStorage.getItem(that.meshName);
-            //if (meshData) {
-            //    var oloader = new THREE.JSONLoader();
-            //    var item = JSON.stringify(meshData);
-            //    var data = oloader.parse(item);
-            //    //var textureKey = this.meshName + '_texture';
-            //    this.gettexture(textureUrl, this.mesh, function () {
-            //    });
-            //}
-            //else {
             var loader = new EBOLoader();
             loader.load(geometryUrl + "?fmt=ebo", function (mesh) {
-                that.mesh = mesh;
-                mesh.name = that.meshName;
+                _this.mesh = mesh;
+                mesh.name = _this.meshName;
                 mesh.geometry.computeBoundingBox();
-                that.gettexture(textureUrl, mesh, function () {
-                    that.scene.remove(that.placeholderMesh);
-                    that.scene.add(mesh);
-                    that.isLoaded = true;
-                    that.isLoading = false;
-                    that.detailLevel.Query.addActiveCube(that);
-                    if (that.debug) {
-                        that.addBoundingBox(mesh, that);
+                _this.gettexture(textureUrl, mesh, function () {
+                    _this.scene.remove(_this.placeholderMesh);
+                    _this.scene.add(mesh);
+                    _this.isLoaded = true;
+                    _this.isLoading = false;
+                    _this.detailLevel.Query.addActiveCube(_this);
+                    if (_this.debug) {
+                        _this.addBoundingBox(mesh, _this);
                     }
-                    //var meshJson = mesh.toJSON();
-                    //window.localStorage.setItem(that.meshName, JSON.stringify(meshJson));
                     callback();
                 });
             });
@@ -109,18 +95,17 @@ var CubeContainer = (function () {
                 o.traverse(function (child) {
                     if (child instanceof THREE.Mesh) {
                         child.geometry.computeVertexNormals();
-                        child.name = that.meshName;
-                        that.mesh = child;
-                        that.gettexture(textureUrl, child, function () {
-                            that.scene.remove(that.placeholderMesh);
-                            that.scene.add(child);
-                            that.isLoaded = true;
-                            that.isLoading = false;
-                            that.detailLevel.Query.addActiveCube(that);
-                            if (that.debug) {
-                                that.addBoundingBox(child, that);
+                        child.name = _this.meshName;
+                        _this.mesh = child;
+                        _this.gettexture(textureUrl, child, function () {
+                            _this.scene.remove(_this.placeholderMesh);
+                            _this.scene.add(child);
+                            _this.isLoaded = true;
+                            _this.isLoading = false;
+                            _this.detailLevel.Query.addActiveCube(_this);
+                            if (_this.debug) {
+                                _this.addBoundingBox(child, _this);
                             }
-                            //window.localStorage.setItem(that.meshName, child.toJSON());
                             callback();
                         });
                     }
