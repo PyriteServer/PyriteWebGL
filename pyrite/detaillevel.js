@@ -112,7 +112,7 @@ var PyriteDetailLevel = (function () {
         var initCount = 0;
         var cubes = this.Cubes;
         cubes.forEach(function (c) {
-            c.cube.worldCoords = _this.GetWorldCoordinatesForCube(c);
+            c.cube.worldCoords = _this.GetWorldCoordinatesForCube(c.cube);
             c.init(_this.scene, _this.Octree, Config.debug == 1);
             c.load(function () {
                 //that.textureLoadingQueue.push(c);

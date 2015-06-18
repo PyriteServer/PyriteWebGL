@@ -2,7 +2,7 @@ var PyriteLoader = (function () {
     function PyriteLoader(p) {
         this.loadType = LoadType.CameraDetection;
         this.lastCameraPos = new THREE.Vector3();
-        this.detectionChangeDistance = 1;
+        this.detectionChangeDistance = 0.1;
         this.upgradeConstant = 0.0;
         this.upgradeFactor = 1.05;
         this.downgradeConstant = 0.0;
@@ -35,9 +35,10 @@ var PyriteLoader = (function () {
                     }
                     // var dl = _this.query.DetailLevels[Config.lod - 1];
                     // dl.loadCubes();
+                }else{
+                    //_this.loadCamCubes(_this.camera);
+                    _this.loadFrustumCubes(camera);
                 }
-                //_this.loadCamCubes(_this.camera);
-                _this.loadFrustumCubes(camera);
             });
             //this.query.load3x3("L2", this.pyrite.camera.position);
         // }
@@ -199,59 +200,59 @@ var PyriteLoader = (function () {
                 var cube = detailLevel.Cubes[c];
                 var cubeKey = dl + ',' + cube.meshName;
                 //var testPos = new THREE.Vector3(camera.position.x, )
-                var distance = camera.position.distanceTo(cube.placeholderMesh.position);
-                if(distance < detailLevel.UpgradeDistance){
-                    // if there is a higher DL, then we want to check for unloading
-                    if(nextdl){
-                        if(distance < nextdl.UpgradeDistance){
-                            if(cube.isLoaded){
-                                cubesToUnload.put(cubeKey, cube);
-                            };
-                            continue; // defer to the next highest DL    
-                        }
-                    }
-                    if(!cube.isLoaded){
-                        cubesToLoad.put(cubeKey, cube);
-                    };
-                }
-                else if (distance > detailLevel.DowngradeDistance){
-                    if(cube.isLoaded){
-                        // before unloading, make sure the lower LOD cubes are loaded for consistency
-                        if(prevdl){
-                            //var intersections = prevdl.Octree.allIntersections(cube.bounds.boundingBox);
-                        }
-                        
-                        cubesToUnload.put(cubeKey, cube);
-                    };
-                }
-                // if(vf.containsPoint(cube.placeholderMesh.position)){
-                //     // then, we should show it if it is as the correct distance for the LOD from the camera
-                //     var distance = camera.position.distanceTo(cube.placeholderMesh.position);
-                //     if(distance < detailLevel.UpgradeDistance){
-                //         // if there is a higher DL, then we want to check for unloading
-                //         if(nextdl){
-                //             if(distance < nextdl.UpgradeDistance){
-                //                 if(cube.isLoaded){
-                //                     cubesToUnload.put(cubeKey, cube);
-                //                 };
-                //                 continue; // defer to the next highest DL    
-                //             }
+                // var distance = camera.position.distanceTo(cube.placeholderMesh.position);
+                // if(distance < detailLevel.UpgradeDistance){
+                //     // if there is a higher DL, then we want to check for unloading
+                //     if(nextdl){
+                //         if(distance < nextdl.UpgradeDistance){
+                //             if(cube.isLoaded){
+                //                 cubesToUnload.put(cubeKey, cube);
+                //             };
+                //             continue; // defer to the next highest DL    
                 //         }
-                //         if(!cube.isLoaded){
-                //             cubesToLoad.put(cubeKey, cube);
-                //         };
                 //     }
-                //     else if (distance > detailLevel.DowngradeDistance){
-                //         if(cube.isLoaded){
-                //             // before unloading, make sure the lower LOD cubes are loaded for consistency
-                //             if(prevdl){
-                //                 //var intersections = prevdl.Octree.allIntersections(cube.bounds.boundingBox);
-                //             }
-                //             
-                //             cubesToUnload.put(cubeKey, cube);
-                //         };
-                //     }
+                //     if(!cube.isLoaded){
+                //         cubesToLoad.put(cubeKey, cube);
+                //     };
                 // }
+                // else if (distance > detailLevel.DowngradeDistance){
+                //     if(cube.isLoaded){
+                //         // before unloading, make sure the lower LOD cubes are loaded for consistency
+                //         if(prevdl){
+                //             //var intersections = prevdl.Octree.allIntersections(cube.bounds.boundingBox);
+                //         }
+                //         
+                //         cubesToUnload.put(cubeKey, cube);
+                //     };
+                // }
+                if(vf.containsPoint(cube.placeholderMesh.position)){
+                    // then, we should show it if it is as the correct distance for the LOD from the camera
+                    var distance = camera.position.distanceTo(cube.placeholderMesh.position);
+                    if(distance <= detailLevel.UpgradeDistance){
+                        // if there is a higher DL, then we want to check for unloading
+                        if(nextdl){
+                            if(distance < nextdl.UpgradeDistance){
+                                if(cube.isLoaded){
+                                    cubesToUnload.put(cubeKey, cube);
+                                };
+                                continue; // defer to the next highest DL    
+                            }
+                        }
+                        if(!cube.isLoaded){
+                            cubesToLoad.put(cubeKey, cube);
+                        };
+                    }
+                    else if (distance > detailLevel.DowngradeDistance && detailLevel.Value !== Config.lod){
+                        if(cube.isLoaded){
+                            // before unloading, make sure the lower LOD cubes are loaded for consistency
+                            if(prevdl){
+                                //var intersections = prevdl.Octree.allIntersections(cube.bounds.boundingBox);
+                            }
+                            
+                            cubesToUnload.put(cubeKey, cube);
+                        };
+                    }
+                }
             };
         };
         
