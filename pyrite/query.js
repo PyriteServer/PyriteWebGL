@@ -2,9 +2,9 @@ var PyriteQuery = (function () {
     function PyriteQuery(loader) {
         this.DetailLevels = new Array();
         this.upgradeConstant = 0.0;
-        this.upgradeFactor = 1.05;
+        this.upgradeFactor = 1.15;
         this.downgradeConstant = 0.0;
-        this.downgradeFactor = 1.05;
+        this.downgradeFactor = 1.25;
         this.initialLoad = true;
         this.activeCubes = new Array();
         this.loader = loader;
