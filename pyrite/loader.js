@@ -31,13 +31,14 @@ var PyriteLoader = (function () {
                         var dl = _this.query.DetailLevels[i];
                         if(dl.Value == Config.lod){
                             dl.loadCubes();
+                            _this.loadCubes(camera);
                         }
                     }
                     // var dl = _this.query.DetailLevels[Config.lod - 1];
                     // dl.loadCubes();
                 }else{
                     //_this.loadCamCubes(_this.camera);
-                    _this.loadFrustumCubes(camera);
+                    _this.loadCubes(camera);
                 }
             });
             //this.query.load3x3("L2", this.pyrite.camera.position);
@@ -67,9 +68,7 @@ var PyriteLoader = (function () {
     };
     PyriteLoader.prototype.updateCameraDetection = function (camera) {
         if (this.lastCameraPos.distanceTo(camera.position) > this.detectionChangeDistance) {
-            //if (this.query) this.query.load3x3("L2", camera.position);
-            //this.query.update(camera);
-            this.loadFrustumCubes(camera);
+            this.loadCubes(camera);
         }
     };
     PyriteLoader.prototype.updateThreeByThree = function (camera) {
@@ -181,15 +180,11 @@ var PyriteLoader = (function () {
         this.cubesToUnload.clearAll();
 
     };
-    PyriteLoader.prototype.loadFrustumCubes = function(camera){
+    PyriteLoader.prototype.loadCubes = function(camera){
         var cubesToLoad = new Dictionary(true);
         var cubesToUnload = new Dictionary(true);
         
         var _this = this;
-        camera.updateMatrix();
-        camera.updateProjectionMatrix();
-        var vf = new THREE.Frustum();
-        vf.setFromMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
         
         for (var dl = this.query.DetailLevels.length - 1; dl >= 0; dl--) {
             var detailLevel = this.query.DetailLevels[dl];
@@ -199,59 +194,21 @@ var PyriteLoader = (function () {
             for(var c = 0; c < detailLevel.Cubes.length; c++){
                 var cube = detailLevel.Cubes[c];
                 var cubeKey = dl + ',' + cube.meshName;
-                //var testPos = new THREE.Vector3(camera.position.x, )
-                // var distance = camera.position.distanceTo(cube.placeholderMesh.position);
-                // if(distance < detailLevel.UpgradeDistance){
-                //     // if there is a higher DL, then we want to check for unloading
-                //     if(nextdl){
-                //         if(distance < nextdl.UpgradeDistance){
-                //             if(cube.isLoaded){
-                //                 cubesToUnload.put(cubeKey, cube);
-                //             };
-                //             continue; // defer to the next highest DL    
-                //         }
-                //     }
-                //     if(!cube.isLoaded){
-                //         cubesToLoad.put(cubeKey, cube);
-                //     };
-                // }
-                // else if (distance > detailLevel.DowngradeDistance){
-                //     if(cube.isLoaded){
-                //         // before unloading, make sure the lower LOD cubes are loaded for consistency
-                //         if(prevdl){
-                //             //var intersections = prevdl.Octree.allIntersections(cube.bounds.boundingBox);
-                //         }
-                //         
-                //         cubesToUnload.put(cubeKey, cube);
-                //     };
-                // }
-                if(vf.containsPoint(cube.placeholderMesh.position)){
-                    // then, we should show it if it is as the correct distance for the LOD from the camera
-                    var distance = camera.position.distanceTo(cube.placeholderMesh.position);
-                    if(distance <= detailLevel.UpgradeDistance){
-                        // if there is a higher DL, then we want to check for unloading
-                        if(nextdl){
-                            if(distance < nextdl.UpgradeDistance){
-                                if(cube.isLoaded){
-                                    cubesToUnload.put(cubeKey, cube);
-                                };
-                                continue; // defer to the next highest DL    
-                            }
-                        }
-                        if(!cube.isLoaded){
-                            cubesToLoad.put(cubeKey, cube);
-                        };
-                    }
-                    else if (distance > detailLevel.DowngradeDistance && detailLevel.Value !== Config.lod){
-                        if(cube.isLoaded){
-                            // before unloading, make sure the lower LOD cubes are loaded for consistency
-                            if(prevdl){
-                                //var intersections = prevdl.Octree.allIntersections(cube.bounds.boundingBox);
-                            }
-                            
-                            cubesToUnload.put(cubeKey, cube);
-                        };
-                    }
+                var distance = camera.position.distanceTo(cube.placeholderMesh.position);
+                
+                // using screen height percentage
+                //var screenHeight = window.innerHeight;
+                var bbHeight = cube.placeholderMesh.geometry.boundingBox.max.x - cube.placeholderMesh.geometry.boundingBox.min.x;
+                var vFOV = camera.fov * Math.PI / 180;
+                var height = 2 * Math.tan( Math.PI / 8) * distance;
+                
+                var vpPercentage = bbHeight / height;
+                if(vpPercentage <= detailLevel.LODUpperThreshold && vpPercentage > detailLevel.LODLowerThreshold){
+                    cubesToLoad.put(cubeKey, cube);
+                }else if (vpPercentage <= detailLevel.LODLowerThreshold || vpPercentage > detailLevel.LODUpperThreshold && nextdl){
+                    // if(prevdl) // only unload if there is a lower detail level
+                    //     cubesToUnload.put(cubeKey, cube);
+                    cubesToUnload.put(cubeKey, cube);
                 }
             };
         };
@@ -271,17 +228,12 @@ var PyriteLoader = (function () {
             });
         }
         
-        //this.cubesToLoad.clearAll();
-        
         if(cubesToUnload.length() > 0){
             cubesToUnload.iterate(function(k, v){
                 if(v.isLoaded)
                     v.unload();
             });
-        }
-        
-        //this.cubesToUnload.clearAll();
-        
+        }        
     };
     PyriteLoader.prototype.loadInitialLOD = function (dl) {
     };

@@ -111,12 +111,42 @@ var PyriteQuery = (function () {
                     //dl.Cubes = new Array<PyriteCube>();
                     dl.DowngradeDistance = dl.WorldCubeScale.length() * _this.downgradeFactor + _this.downgradeConstant;
                     dl.UpgradeDistance = dl.WorldCubeScale.length() * _this.upgradeFactor + _this.upgradeConstant;
+                    // dl.LODUpperThreshold = _this.getLODUpper(dl);
+                    // dl.LODLowerThreshold = _this.getLODLower(dl);
+                    dl.LODUpperThreshold = 0.95;
+                    dl.LODLowerThreshold = 0.35;
                     that.DetailLevels.push(dl);
-                    console.log("Metadata query completed.");
+                    //console.log("Metadata query completed.");
                 }
                 onLoad();
             }
         });
+    };
+    PyriteQuery.prototype.getLODUpper = function(dl){
+        switch(dl.Value){
+          case 1:
+          return 1.0;
+          break;
+          case 2:
+          return 0.75;
+          break;
+          case 3:
+          return 0.5;
+          break;  
+        };
+    };
+    PyriteQuery.prototype.getLODLower = function(dl){
+        switch(dl.Value){
+          case 1:
+          return 0.80;
+          break;
+          case 2:
+          return 0.60;
+          break;
+          case 3:
+          return 0.11;
+          break;  
+        };
     };
     PyriteQuery.prototype.loadDetailLevels = function (onLoad) {
         var _this = this;

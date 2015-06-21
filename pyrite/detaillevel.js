@@ -13,6 +13,8 @@ var PyriteDetailLevel = (function () {
         this.distance;
         this.UpgradeDistance;
         this.DowngradeDistance;
+        this.LODUpperThreshold;
+        this.LODLowerThreshold;
         //this.worker = new Worker('dlworker.js');
     }
     PyriteDetailLevel.prototype.isHighestLod = function () {
@@ -109,15 +111,15 @@ var PyriteDetailLevel = (function () {
     };
     PyriteDetailLevel.prototype.loadCubes = function () {
         var _this = this;
-        var initCount = 0;
+        //var initCount = 0;
         var cubes = this.Cubes;
         cubes.forEach(function (c) {
             c.cube.worldCoords = _this.GetWorldCoordinatesForCube(c.cube);
-            c.init(_this.scene, _this.Octree, Config.debug == 1);
+            c.init(_this.scene, _this.Octree, false);
             c.load(function () {
                 //that.textureLoadingQueue.push(c);
-                var key = _this.Value + ',' + c.meshName;
-                _this.Query.loader.activeCubes.put(key, c);
+                // var key = _this.Value + ',' + c.meshName;
+                // _this.Query.loader.activeCubes.put(key, c);
             });
             //that.threadPool.run(function () { c.load() }, {});
             //that.threadPool.run(["ts/pyritecube.js"], function (param, done) {

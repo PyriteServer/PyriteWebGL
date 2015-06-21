@@ -62,7 +62,7 @@ var CubeContainer = (function () {
                     _this.scene.add(mesh);
                     _this.isLoaded = true;
                     _this.isLoading = false;
-                    _this.detailLevel.Query.addActiveCube(_this);
+                    //_this.detailLevel.Query.addActiveCube(_this);
                     if (_this.debug) {
                         _this.addBoundingBox(mesh, _this);
                     }
@@ -80,7 +80,7 @@ var CubeContainer = (function () {
                     _this.scene.add(mesh);
                     _this.isLoaded = true;
                     _this.isLoading = false;
-                    _this.detailLevel.Query.addActiveCube(_this);
+                    //_this.detailLevel.Query.addActiveCube(_this);
                     if (_this.debug) {
                         _this.addBoundingBox(mesh, _this);
                     }
@@ -102,7 +102,7 @@ var CubeContainer = (function () {
                             _this.scene.add(child);
                             _this.isLoaded = true;
                             _this.isLoading = false;
-                            _this.detailLevel.Query.addActiveCube(_this);
+                            //_this.detailLevel.Query.addActiveCube(_this);
                             if (_this.debug) {
                                 _this.addBoundingBox(child, _this);
                             }
@@ -114,13 +114,17 @@ var CubeContainer = (function () {
         }
     };
     CubeContainer.prototype.unload = function () {
-        this.detailLevel.Query.activeCubes.splice(this.detailLevel.Query.activeCubes.indexOf(this), 1);
+        //this.detailLevel.Query.activeCubes.splice(this.detailLevel.Query.activeCubes.indexOf(this), 1);
         if (this.debug)
             this.scene.remove(this.bbox);
-        this.scene.remove(this.mesh);
-        this.mesh.geometry.dispose();
-        this.mesh.material.dispose();
-        this.mesh = null;
+            
+        if(this.mesh){
+            this.scene.remove(this.mesh);
+            this.mesh.geometry.dispose();
+            this.mesh.material.dispose();
+            this.mesh = null;
+        }
+
         this.isLoaded = false;
     };
     CubeContainer.prototype.gettexture = function (textureUrl, mesh, onLoad) {
