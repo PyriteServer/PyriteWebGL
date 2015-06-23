@@ -4,6 +4,7 @@ var CubeContainer = (function () {
         this.useCtm = false;
         this.isLoaded = false;
         this.isLoading = false;
+        this.isUnloading = false;
         this.initialized = false;
         this.debug = false;
         this.upgraded = false;
@@ -11,6 +12,7 @@ var CubeContainer = (function () {
         this.textureQueue = new Array();
         this.detailLevel = detailLevel;
         this.mesh;
+        this.toggleYZ = new THREE.Matrix4();
     }
     CubeContainer.prototype.init = function (scene, octree, showPlaceHolder) {
         this.scene = scene;
@@ -18,6 +20,12 @@ var CubeContainer = (function () {
             this.octree = octree;
         this.meshName = this.cube.x + "_" + this.cube.y + "_" + this.cube.z;
         this.addPlaceholder(showPlaceHolder);
+        this.toggleYZ.set(
+            1,0,0,0,
+            0,0,1,0,
+            0,-1,0,0,
+            0,0,0,1
+        );
         this.initialized = true;
     };
     CubeContainer.prototype.addPlaceholder = function (show) {
@@ -25,9 +33,13 @@ var CubeContainer = (function () {
         this.placeholderMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.35 }); //red
         this.placeholderMesh = new THREE.Mesh(new THREE.BoxGeometry(worldScale.x, worldScale.y, worldScale.z), this.placeholderMaterial);
         this.placeholderMesh.name = "ph_" + this.meshName;
-        this.placeholderMesh.translateX(this.cube.worldCoords.x);
-        this.placeholderMesh.translateY(this.cube.worldCoords.y);
-        this.placeholderMesh.translateZ(this.cube.worldCoords.z);
+        // this.placeholderMesh.translateX(this.cube.worldCoords.x);
+        // this.placeholderMesh.translateY(this.cube.worldCoords.y);
+        // this.placeholderMesh.translateZ(this.cube.worldCoords.z);
+        ///this.placeholderMesh.position.set(this.cube.worldCoords.x, this.cube.worldCoords.y, this.cube.worldCoords.z);
+        this.placeholderMesh.position.set(this.cube.worldCoords.x, this.cube.worldCoords.z, -this.cube.worldCoords.y);
+        //this.placeholderMesh.applyMatrix(this.toggleYZ);
+        //this.placeholderMesh.geometry.applyMatrix(this.toggleYZ);
         this.placeholderMesh.geometry.computeBoundingBox();
         this.placeholderMesh.geometry.computeBoundingSphere();
         if (show) {
@@ -51,7 +63,7 @@ var CubeContainer = (function () {
         var _this = this;
         if (this.useCtm) {
             var loader = new THREE.CTMLoader(true);
-            document.body.appendChild(loader.statusDomElement);
+            //document.body.appendChild(loader.statusDomElement);
             loader.load(geometryUrl + "?fmt=ctm",function (geometry) {
                 var material1 = new THREE.MeshLambertMaterial( { color: 0xf0ffff } );
                 var mesh = new THREE.Mesh(geometry, material1);
@@ -59,10 +71,10 @@ var CubeContainer = (function () {
                 mesh.name = _this.meshName;
                 _this.gettexture(textureUrl, mesh, function () {
                     _this.scene.remove(_this.placeholderMesh);
+                    mesh.geometry.applyMatrix(_this.toggleYZ);
                     _this.scene.add(mesh);
                     _this.isLoaded = true;
                     _this.isLoading = false;
-                    //_this.detailLevel.Query.addActiveCube(_this);
                     if (_this.debug) {
                         _this.addBoundingBox(mesh, _this);
                     }
@@ -80,7 +92,6 @@ var CubeContainer = (function () {
                     _this.scene.add(mesh);
                     _this.isLoaded = true;
                     _this.isLoading = false;
-                    //_this.detailLevel.Query.addActiveCube(_this);
                     if (_this.debug) {
                         _this.addBoundingBox(mesh, _this);
                     }
@@ -102,7 +113,6 @@ var CubeContainer = (function () {
                             _this.scene.add(child);
                             _this.isLoaded = true;
                             _this.isLoading = false;
-                            //_this.detailLevel.Query.addActiveCube(_this);
                             if (_this.debug) {
                                 _this.addBoundingBox(child, _this);
                             }
@@ -114,7 +124,7 @@ var CubeContainer = (function () {
         }
     };
     CubeContainer.prototype.unload = function () {
-        //this.detailLevel.Query.activeCubes.splice(this.detailLevel.Query.activeCubes.indexOf(this), 1);
+        this.isUnloading = true;
         if (this.debug)
             this.scene.remove(this.bbox);
             
@@ -126,50 +136,28 @@ var CubeContainer = (function () {
         }
 
         this.isLoaded = false;
+        this.isUnloading = false;
     };
     CubeContainer.prototype.gettexture = function (textureUrl, mesh, onLoad) {
-        var that = this;
-        //if (this.detailLevel.Query.loader.pyrite.cache.contains(textureUrl)) {
-        //    var texture = this.getCachedTexture(textureUrl);
-        //    // if the key is in the cache, but the texture is not saved, then there is another operation downloading it, so wait and try again.
-        //    if (texture == null) {
-        //        if(this.timeout !== undefined) clearTimeout(this.timeout);
-        //        this.timeout = setTimeout(this.gettexture(textureUrl, mesh, onLoad), 3000);
-        //        //return;
-        //    }
-        //    var material = new THREE.MeshBasicMaterial();
-        //    material.map = texture;
-        //    material.map.needsUpdate = true;
-        //    material.needsUpdate = true;
-        //    mesh.material = material;
-        //    onLoad();
-        //} else {
-        //that.setCachedTexture(textureUrl, null);
-        THREE.ImageUtils.crossOrigin = 'anonymous';
-        THREE.ImageUtils.loadTexture(textureUrl, THREE.UVMapping, function (texture) {
-            var material = new THREE.MeshBasicMaterial();
-            material.map = texture;
-            material.map.needsUpdate = true;
-            material.needsUpdate = true;
-            mesh.material = material;
-            //that.setCachedTexture(textureUrl, texture);
-            onLoad();
-        }, function (error) {
-            console.log(error);
+        var texture = this.detailLevel.Query.loader.cache.getSet(textureUrl, function(){
+            THREE.ImageUtils.crossOrigin = 'anonymous';
+            return THREE.ImageUtils.loadTexture(textureUrl);
         });
-        //}
+        var material = new THREE.MeshBasicMaterial();
+        material.map = texture;
+        material.map.needsUpdate = true;
+        material.needsUpdate = true;
+        mesh.material = material;
+        onLoad();
     };
-    //getCachedTexture(texturKey): THREE.Texture {
-    //    return this.detailLevel.Query.loader.pyrite.cache.get(texturKey);
-    //}
-    //setCachedTexture(textureKey, texture) {
-    //    this.detailLevel.Query.loader.pyrite.cache.set(textureKey, texture);
-    //}
     CubeContainer.prototype.addBoundingBox = function (mesh, that) {
         var value = that.detailLevel.Value;
         var scene = that.scene;
         var hex = 0xff0000;
         switch (value) {
+            case 0:
+                hex = 0xffffff;
+            break;
             case 1:
                 hex = 0xff0000;
                 break;
@@ -181,6 +169,9 @@ var CubeContainer = (function () {
                 break;
             case 4:
                 hex = 0x00ff00;
+                break;
+            default:
+                hex = 0xffffff;
                 break;
         }
         that.bbox = new THREE.BoundingBoxHelper(mesh, hex);

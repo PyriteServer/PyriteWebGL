@@ -137,6 +137,8 @@ var PyriteDetailLevel = (function () {
         var cubes = this.Cubes;
         for(var i = 0; i < cubes.length; i++){
             cubes[i].cube.worldCoords = _this.GetWorldCoordinatesForCube(cubes[i].cube);
+            var worldCoords = cubes[i].cube.worldCoords;
+            cubes[i].cube.correctedWorldCoords = new THREE.Vector3(worldCoords.x, worldCoords.z + 450, worldCoords.y);
             cubes[i].init(_this.scene, _this.Octree, false);
         }
     };
