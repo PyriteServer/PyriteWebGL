@@ -12,7 +12,7 @@ var EBOLoader = (function () {
             async: true
         }).done(function (result) {
             //onLoad(scope.parse(new Uint8Array(result)));
-            var worker = new Worker('eboworker.js');
+            var worker = new Worker('./pyrite/eboworker.js');
             worker.onmessage = function (e) {
                 var indices = e.data.indices;
                 var positions = e.data.positions;

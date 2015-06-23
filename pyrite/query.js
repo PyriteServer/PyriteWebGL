@@ -54,6 +54,7 @@ var PyriteQuery = (function () {
                     // dl.LODLowerThreshold = _this.getLODLower(dl);
                     dl.LODUpperThreshold = 0.95;
                     dl.LODLowerThreshold = 0.35;
+                    dl.worldCenterPos = new THREE.Vector3();
                     that.DetailLevels.push(dl);
                 }
                 onLoad();
@@ -118,8 +119,10 @@ var PyriteQuery = (function () {
         var maxmin = new THREE.Vector3().copy(max).sub(min);
         var maxminHalf = new THREE.Vector3().copy(maxmin).divideScalar(2);
         var newCameraPosition = new THREE.Vector3().copy(min).add(maxminHalf);
-        newCameraPosition.add(new THREE.Vector3(0, 0, maxmin.z * 1.4));
-        this.loader.pyrite.setCamera(newCameraPosition, new THREE.Euler(0, 0, 0));
+        //var lookAt = new THREE.Vector3().set(newCameraPosition.x, newCameraPosition.z, -newCameraPosition.y);
+        newCameraPosition.set(newCameraPosition.x, newCameraPosition.z, -newCameraPosition.y);
+        newCameraPosition.add(new THREE.Vector3(0, maxmin.z * 1.4, 0));
+        this.loader.pyrite.setCamera(newCameraPosition, new THREE.Euler(-45, 0, 0));
     };
     PyriteQuery.prototype.loadAll = function (callback) {
         var _this = this;

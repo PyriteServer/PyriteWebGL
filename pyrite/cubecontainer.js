@@ -70,8 +70,8 @@ var CubeContainer = (function () {
                 _this.mesh = mesh;
                 mesh.name = _this.meshName;
                 _this.gettexture(textureUrl, mesh, function () {
-                    _this.scene.remove(_this.placeholderMesh);
                     mesh.geometry.applyMatrix(_this.toggleYZ);
+                    _this.scene.remove(_this.placeholderMesh);
                     _this.scene.add(mesh);
                     _this.isLoaded = true;
                     _this.isLoading = false;
@@ -86,8 +86,10 @@ var CubeContainer = (function () {
             loader.load(geometryUrl + "?fmt=ebo", function (mesh) {
                 _this.mesh = mesh;
                 mesh.name = _this.meshName;
+                
                 mesh.geometry.computeBoundingBox();
                 _this.gettexture(textureUrl, mesh, function () {
+                    mesh.geometry.applyMatrix(_this.toggleYZ);
                     _this.scene.remove(_this.placeholderMesh);
                     _this.scene.add(mesh);
                     _this.isLoaded = true;
@@ -109,6 +111,7 @@ var CubeContainer = (function () {
                         child.name = _this.meshName;
                         _this.mesh = child;
                         _this.gettexture(textureUrl, child, function () {
+                            child.geometry.applyMatrix(_this.toggleYZ);
                             _this.scene.remove(_this.placeholderMesh);
                             _this.scene.add(child);
                             _this.isLoaded = true;

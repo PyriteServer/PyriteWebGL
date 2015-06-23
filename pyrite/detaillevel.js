@@ -15,6 +15,7 @@ var PyriteDetailLevel = (function () {
         this.DowngradeDistance;
         this.LODUpperThreshold;
         this.LODLowerThreshold;
+        this.worldCenterPos;
         //this.worker = new Worker('dlworker.js');
     }
     PyriteDetailLevel.prototype.isHighestLod = function () {

@@ -142,11 +142,14 @@
 				image.src = path;
 				return material;
 			}
-    Pyrite.prototype.setCamera = function (positon, euler) {
+    Pyrite.prototype.setCamera = function (positon, euler, lookAt) {
         this.cameraPos = positon;
         this.cameraRot = euler;
         this.camera.position.set(positon.x, positon.y, positon.z);
         this.camera.rotation.set(euler.x, euler.y, euler.z, euler.order);
+        
+        // if(lookAt !== 'undefined')
+        //     this.camera.lookAt(lookAt);
     };
 
     Pyrite.prototype.resetCamera = function () {
