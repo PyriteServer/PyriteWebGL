@@ -1,6 +1,6 @@
 ﻿if ('function' === typeof importScripts) {
 
-    importScripts('three.min.js', 'jdataview.js', 'jbinary.js');
+    importScripts('../js/three.min.js', '../js/jdataview.js', '../js/jbinary.js');
     onmessage = function (e) {
         var data = e.data[0];
         var dataView = new jDataView(data, 0, data.length, true);

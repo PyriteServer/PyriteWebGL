@@ -4,6 +4,7 @@ var Cube = (function () {
         this.y = 0;
         this.z = 0;
         this.worldCoords;
+        this.correctedWorldCoords;
     }
     return Cube;
 })();

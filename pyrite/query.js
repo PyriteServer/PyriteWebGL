@@ -24,66 +24,6 @@ var PyriteQuery = (function () {
         return index > -1;
     };
     PyriteQuery.prototype.update = function(camera) {
-        var _this = this;
-        // if (this.activeCubes.length >= this.DetailLevels[this.DetailLevels.length - 1].Cubes.length) {
-        //     // if(this.frameIndex < this.activeCubes.length){
-        //     //     
-        //     //     this.frameIndex++;
-        //     // }
-        //     // for(var i = 0; i < this.activeCubes.length; i++){
-        //     //     var cube = this.activeCubes[i];
-        //     //     if (cube.upgradable() && cube.shouldUpgrade(camera.position)) {
-        //     //         if (!cube.isLoaded && !cube.isLoading) {
-        //     //             //c.init(this.loader.pyrite.scene, c.detailLevel.Octree);
-        //     //             // var co = Coroutine(function* (cube){
-        //     //             //     yield cube.load()
-        //     //             //     }, cube);
-        //     //             
-        //     //             yield cube.load(function () { });
-        //     //             
-        //     //         }
-        //     //         else if (!cube.isLoading) {
-        //     //             // Coroutine(function* (cube){
-        //     //             //     yield that.upgradeCubeLod(cube);
-        //     //             //     //yield;
-        //     //             // }, cube);
-        //     //             yield that.upgradeCubeLod(cube);
-        //     //         }
-        //     //     }
-        //     //     else if (cube.downgradable() && cube.shouldDowngrade(camera.position)) {
-        //     //         if (!cube.isLoaded && !cube.isLoading) {
-        //     //             //c.init(this.loader.pyrite.scene, c.detailLevel.Octree);
-        //     //             //cube.isUpgraded = false;
-        //     //             //yield cube.load(function () { });
-        //     //         }
-        //     //     }
-        //     // }
-        // }
-    };
-    PyriteQuery.prototype.upgradeCubeLod = function (container) {
-        if (container.detailLevel.isHighestLod())
-            return;
-        var lod = container.detailLevel.Value - 1;
-        var cube = container.cube;
-        var newLod = lod - 1;
-        var detailLevel = this.DetailLevels[newLod];
-        var cubeFactor = this.getNextCubeFactor(lod);
-        var x = cube.x, y = cube.y, z = cube.z;
-        var min = new THREE.Vector3(x * cubeFactor.x + 0.5, y * cubeFactor.y + 0.5, z * cubeFactor.z + 0.5);
-        var max = new THREE.Vector3((x + 1) * cubeFactor.x - 0.5, (y + 1) * cubeFactor.y - 0.5, (z + 1) * cubeFactor.z - 0.5);
-        var intersections = detailLevel.Octree.allInstersections(new THREE.Box3(min, max));
-        if (intersections && intersections.length > 0) {
-            for(var i = 0; i < intersections.length; i++){
-                var intersection = intersections[i];
-                if (!intersection.object.isLoaded) {
-                    intersection.object.isUpgraded = true;
-                    intersection.object.load(function () {
-                        if (container.isLoaded && intersections.indexOf(i) == intersections.length - 1)
-                            container.unload();
-                    });
-                }
-            }
-        }
     };
     PyriteQuery.prototype.loadMetadata = function (onLoad) {
         var _this = this;
@@ -108,15 +48,44 @@ var PyriteQuery = (function () {
                     dl.WorldBoundsMin = new THREE.Vector3(detailLevels[i].worldBounds.min.x, detailLevels[i].worldBounds.min.y, detailLevels[i].worldBounds.min.z);
                     dl.WorldCubeScale = new THREE.Vector3(detailLevels[i].worldCubeScale.x, detailLevels[i].worldCubeScale.y, detailLevels[i].worldCubeScale.z);
                     dl.WorldBoundsSize = dl.WorldBoundsMax.sub(dl.WorldBoundsMin);
-                    //dl.Cubes = new Array<PyriteCube>();
                     dl.DowngradeDistance = dl.WorldCubeScale.length() * _this.downgradeFactor + _this.downgradeConstant;
                     dl.UpgradeDistance = dl.WorldCubeScale.length() * _this.upgradeFactor + _this.upgradeConstant;
+                    // dl.LODUpperThreshold = _this.getLODUpper(dl);
+                    // dl.LODLowerThreshold = _this.getLODLower(dl);
+                    dl.LODUpperThreshold = 0.95;
+                    dl.LODLowerThreshold = 0.35;
+                    dl.worldCenterPos = new THREE.Vector3();
                     that.DetailLevels.push(dl);
-                    console.log("Metadata query completed.");
                 }
                 onLoad();
             }
         });
+    };
+    PyriteQuery.prototype.getLODUpper = function(dl){
+        switch(dl.Value){
+          case 1:
+          return 1.0;
+          break;
+          case 2:
+          return 0.75;
+          break;
+          case 3:
+          return 0.5;
+          break;  
+        };
+    };
+    PyriteQuery.prototype.getLODLower = function(dl){
+        switch(dl.Value){
+          case 1:
+          return 0.80;
+          break;
+          case 2:
+          return 0.60;
+          break;
+          case 3:
+          return 0.11;
+          break;  
+        };
     };
     PyriteQuery.prototype.loadDetailLevels = function (onLoad) {
         var _this = this;
@@ -131,8 +100,6 @@ var PyriteQuery = (function () {
             var cubesUrl = _this.versionUrl + "query/" + dl.Name + "/" + maxboundingboxquery;
             $.get(cubesUrl).done(function (r) {
                 var cubes = r.result;
-                //dl.Cubes = new Array<PyriteCube>(cubes.length);
-                // TODO: implement Octree classes
                 for (var i = 0; i < dl.Cubes.length; i++) {
                     var cubeContainer = new CubeContainer(dl);
                     cubeContainer.cube = new Cube();
@@ -142,7 +109,6 @@ var PyriteQuery = (function () {
                     dl.Cubes.push(cubeContainer);
                 }
                 onLoad(dl);
-                //this.loader.onLoaded(dl);
             });
         });
     };
@@ -153,8 +119,10 @@ var PyriteQuery = (function () {
         var maxmin = new THREE.Vector3().copy(max).sub(min);
         var maxminHalf = new THREE.Vector3().copy(maxmin).divideScalar(2);
         var newCameraPosition = new THREE.Vector3().copy(min).add(maxminHalf);
-        newCameraPosition.add(new THREE.Vector3(0, 0, maxmin.z * 1.4));
-        //this.loader.pyrite.setCamera(newCameraPosition, new THREE.Euler(0, 0, 0));
+        //var lookAt = new THREE.Vector3().set(newCameraPosition.x, newCameraPosition.z, -newCameraPosition.y);
+        newCameraPosition.set(newCameraPosition.x, newCameraPosition.z, -newCameraPosition.y);
+        newCameraPosition.add(new THREE.Vector3(0, maxmin.z * 1.4, 0));
+        this.loader.pyrite.setCamera(newCameraPosition, new THREE.Euler(-45, 0, 0));
     };
     PyriteQuery.prototype.loadAll = function (callback) {
         var _this = this;
@@ -274,11 +242,9 @@ var PyriteQuery = (function () {
         });
     };
     PyriteQuery.prototype.GetModelPath = function (lod, x, y, z) {
-        //return string.Format("{0}/sets/{1}/{2}/models/{3}/{4},{5},{6}", _apiUrl, SetName, Version, lod, x, y, z);
         return this.versionUrl + "models/" + lod + "/" + x + "," + y + "," + z;
     };
     PyriteQuery.prototype.GetTexturePath = function (lod, x, y) {
-        //return string.Format("{0}/sets/{1}/{2}/models/{3}/{4},{5},{6}", _apiUrl, SetName, Version, lod, x, y, z);
         return this.versionUrl + "textures/" + lod + "/" + x + "," + y;
     };
     PyriteQuery.prototype.getNextCubeFactor = function (lodIndex) {
