@@ -51,7 +51,7 @@
             Config.showcubes = parseInt(queries['showcubes']);
         }
 
-        var container = document.createElement('div');
+        var container = document.getElementById('container');
         document.body.appendChild(container);
 
         this.loader = new PyriteLoader(this);
@@ -95,6 +95,12 @@
             return _this.onWindowResize();
         }, false);
 
+        this.addControls(container);
+        
+        var axisHelper = new THREE.AxisHelper( 50 );
+        this.scene.add( axisHelper ); 
+    }
+    Pyrite.prototype.addControls = function(container) {
         var button = document.createElement("button");
         button.name = "cameraresetbutton";
         button.innerText = "Reset Camera";
@@ -107,9 +113,9 @@
         }, false);
         container.appendChild(button);
         
-        var axisHelper = new THREE.AxisHelper( 50 );
-        this.scene.add( axisHelper ); 
-    }
+        var controlmap = document.createElement('table');
+        
+    };
     Pyrite.prototype.setSkybox = function () {
         this.texture_placeholder = document.createElement('canvas');
         this.texture_placeholder.width = 128;

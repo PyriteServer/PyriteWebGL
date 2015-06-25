@@ -62,6 +62,7 @@ var CubeContainer = (function () {
         var geometryUrl = this.detailLevel.Query.GetModelPath(this.detailLevel.Name, this.cube.x, this.cube.y, this.cube.z);
         var _this = this;
         if (this.useCtm) {
+            
             var loader = new THREE.CTMLoader(true);
             //document.body.appendChild(loader.statusDomElement);
             loader.load(geometryUrl + "?fmt=ctm",function (geometry) {
@@ -79,8 +80,8 @@ var CubeContainer = (function () {
                         _this.addBoundingBox(mesh, _this);
                     }
                     callback();
-                }, {useWorker: true});
-            } );
+                });
+            }, {useWorker: true, worker: new Worker("js/ctm/CTMWorker.js")} );
         } else if (this.useEbo) {
             var loader = new EBOLoader();
             loader.load(geometryUrl + "?fmt=ebo", function (mesh) {
