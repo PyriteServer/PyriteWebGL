@@ -147,6 +147,9 @@ var CubeContainer = (function () {
             THREE.ImageUtils.crossOrigin = 'anonymous';
             return THREE.ImageUtils.loadTexture(textureUrl);
         });
+        if(!texture || typeof texture == 'undefined'){
+            console.log('texture not loaded');
+        }
         var material = new THREE.MeshBasicMaterial();
         material.map = texture;
         material.map.needsUpdate = true;

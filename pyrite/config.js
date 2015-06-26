@@ -3,6 +3,7 @@ var Config = (function () {
     }
     //static server: string = "http://pyrite.azurewebsites.net/";
     Config.server = "http://api.pyrite3d.org/";
+    //Config.server = "http://pyrite.azurewebsites.net/";
     Config.version = "V2";
     Config.set = "PerthNew";
     Config.lod = 4;
