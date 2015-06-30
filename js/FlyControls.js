@@ -61,8 +61,8 @@ THREE.FlyControls = function ( object, domElement ) {
 
 			// case 82: /*R*/ this.moveState.up = 1; break;
 			// case 70: /*F*/ this.moveState.down = 1; break;
-			case 81: /*Q*/ this.moveState.up = 1; break;
-			case 69: /*E*/ this.moveState.down = 1; break;
+			case 81: /*Q*/ this.moveState.down = 1; break;
+			case 69: /*E*/ this.moveState.up = 1; break;
 
 			case 38: /*up*/ this.moveState.pitchUp = 1; break;
 			case 40: /*down*/ this.moveState.pitchDown = 1; break;
@@ -94,8 +94,8 @@ THREE.FlyControls = function ( object, domElement ) {
 
 			//case 82: /*R*/ this.moveState.up = 0; break;
 			//case 70: /*F*/ this.moveState.down = 0; break;
-			case 81: /*Q*/ this.moveState.up = 0; break;
-			case 69: /*E*/ this.moveState.down = 0; break;
+			case 81: /*Q*/ this.moveState.down = 0; break;
+			case 69: /*E*/ this.moveState.up = 0; break;
 
 			case 38: /*up*/ this.moveState.pitchUp = 0; break;
 			case 40: /*down*/ this.moveState.pitchDown = 0; break;
@@ -192,18 +192,27 @@ THREE.FlyControls = function ( object, domElement ) {
 
 		var moveMult = delta * this.movementSpeed;
 		var rotMult = delta * this.rollSpeed;
-
+		
 		this.object.translateX( this.moveVector.x * moveMult );
 		this.object.translateY( this.moveVector.y * moveMult );
 		this.object.translateZ( this.moveVector.z * moveMult );
-
-		this.tmpQuaternion.set( this.rotationVector.x * rotMult, this.rotationVector.y * rotMult, this.rotationVector.z * rotMult, 1 ).normalize();
-		this.object.quaternion.multiply( this.tmpQuaternion );
-
-		// expose the rotation vector for convenience
-		this.object.rotation.setFromQuaternion( this.object.quaternion, this.object.rotation.order );
-
-
+		
+		// modified to find a camera in the children of the object - jfox
+		if(this.object.children.length > 0){
+			this.tmpQuaternion.set( this.rotationVector.x * rotMult, 0, this.rotationVector.z * rotMult, 1 ).normalize();
+			var camera = this.object.children[0];
+			camera.quaternion.multiply( this.tmpQuaternion );
+			camera.rotation.setFromQuaternion( camera.quaternion, camera.rotation.order );
+			this.tmpQuaternion.set( 0, this.rotationVector.y * rotMult, 0, 1 ).normalize();
+			this.object.quaternion.multiply( this.tmpQuaternion );
+			// expose the rotation vector for convenience
+			this.object.rotation.setFromQuaternion( this.object.quaternion, this.object.rotation.order );
+		}else{
+			this.tmpQuaternion.set( this.rotationVector.x * rotMult, this.rotationVector.y * rotMult, this.rotationVector.z * rotMult, 1 ).normalize();
+			this.object.quaternion.multiply( this.tmpQuaternion );
+			// expose the rotation vector for convenience
+			this.object.rotation.setFromQuaternion( this.object.quaternion, this.object.rotation.order );
+		}
 	};
 
 	this.updateMovementVector = function() {
@@ -223,7 +232,7 @@ THREE.FlyControls = function ( object, domElement ) {
 		this.rotationVector.x = ( -this.moveState.pitchDown + this.moveState.pitchUp );
 		this.rotationVector.y = ( -this.moveState.yawRight  + this.moveState.yawLeft );
 		this.rotationVector.z = ( -this.moveState.rollRight + this.moveState.rollLeft );
-
+		//this.rotationVector.z = 0;
 		//console.log( 'rotate:', [ this.rotationVector.x, this.rotationVector.y, this.rotationVector.z ] );
 
 	};

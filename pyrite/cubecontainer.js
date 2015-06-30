@@ -9,7 +9,7 @@ var CubeContainer = (function () {
         this.debug = false;
         this.upgraded = false;
         this.upgrading = false;
-        this.textureQueue = new Array();
+        this.textureQueue = new MicroCache();
         this.detailLevel = detailLevel;
         this.mesh;
         this.toggleYZ = new THREE.Matrix4();
@@ -61,11 +61,9 @@ var CubeContainer = (function () {
         var textureUrl = this.detailLevel.Query.GetTexturePath(this.detailLevel.Name, textureCoords.x, textureCoords.y);
         var geometryUrl = this.detailLevel.Query.GetModelPath(this.detailLevel.Name, this.cube.x, this.cube.y, this.cube.z);
         var _this = this;
-        if (this.useCtm) {
-            
+        if (this.useCtm) {         
             var loader = new THREE.CTMLoader(true);
-            //document.body.appendChild(loader.statusDomElement);
-            loader.load(geometryUrl + "?fmt=ctm",function (geometry) {
+            loader.load(geometryUrl + "?fmt=ctm&webgl=1",function (geometry) {
                 var material1 = new THREE.MeshLambertMaterial( { color: 0xf0ffff } );
                 var mesh = new THREE.Mesh(geometry, material1);
                 _this.mesh = mesh;
@@ -81,7 +79,7 @@ var CubeContainer = (function () {
                     }
                     callback();
                 });
-            }, {useWorker: true, worker: new Worker("js/ctm/CTMWorker.js")} );
+            }); //, {useWorker: false, worker: new Worker("js/ctm/CTMWorker.js")} );
         } else if (this.useEbo) {
             var loader = new EBOLoader();
             loader.load(geometryUrl + "?fmt=ebo", function (mesh) {
@@ -147,8 +145,13 @@ var CubeContainer = (function () {
             THREE.ImageUtils.crossOrigin = 'anonymous';
             return THREE.ImageUtils.loadTexture(textureUrl);
         });
-        if(!texture || typeof texture == 'undefined'){
-            console.log('texture not loaded');
+        if(!texture.img || typeof texture.img === 'undefined'){
+            console.log('texture image not loaded');
+            // var waitList = this.textureQueue.getSet(textureUrl, function(){
+            //    return new Array(); 
+            // });
+            // waitList.push(mesh);
+            //return;
         }
         var material = new THREE.MeshBasicMaterial();
         material.map = texture;

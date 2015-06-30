@@ -189,18 +189,31 @@ var PyriteLoader = (function () {
             for(var c = 0; c < detailLevel.Cubes.length; c++){
                 var cube = detailLevel.Cubes[c];
                 var distance = camera.position.distanceTo(cube.placeholderMesh.position);
-                var bbHeight = cube.placeholderMesh.geometry.boundingBox.max.x - cube.placeholderMesh.geometry.boundingBox.min.x;
+                //var bbHeight = cube.placeholderMesh.geometry.boundingBox.max.x - cube.placeholderMesh.geometry.boundingBox.min.x;
+                var bbheight = detailLevel.WorldCubeScale.y;
                 var height = 2 * Math.tan( Math.PI / 8) * distance;
-                var vpPercentage = bbHeight / height;
-                if(vpPercentage <= detailLevel.LODUpperThreshold && vpPercentage > detailLevel.LODLowerThreshold){
+                var vpPercentage = bbheight / height;
+                
+                var lower = typeof prevdl !== 'undefined' ?  detailLevel.WorldCubeScale.y / prevdl.WorldCubeScale.y : 0.35;
+                var upper = 1 + lower;
+                if(vpPercentage <= upper && vpPercentage > lower){
                     if(!cube.isLoaded)
                         cubesToLoad.push(cube);
-                }else if (vpPercentage <= detailLevel.LODLowerThreshold || vpPercentage > detailLevel.LODUpperThreshold && nextdl){
+                }else if (vpPercentage <= lower || vpPercentage > upper && nextdl){
                     // if(prevdl) // only unload if there is a lower detail level
                     //     cubesToUnload.put(cubeKey, cube);
                     if(cube.isLoaded)
                         cubesToUnload.push(cube);
                 }
+                // if(vpPercentage <= detailLevel.LODUpperThreshold && vpPercentage > detailLevel.LODLowerThreshold){
+                //     if(!cube.isLoaded)
+                //         cubesToLoad.push(cube);
+                // }else if (vpPercentage <= detailLevel.LODLowerThreshold || vpPercentage > detailLevel.LODUpperThreshold && nextdl){
+                //     // if(prevdl) // only unload if there is a lower detail level
+                //     //     cubesToUnload.put(cubeKey, cube);
+                //     if(cube.isLoaded)
+                //         cubesToUnload.push(cube);
+                // }
             };
         };
         
