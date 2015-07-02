@@ -201,7 +201,7 @@ var PyriteLoader = (function () {
                 //if(vf.containsPoint(cube.placeholderMesh.position) || vf.containsPoint(searchPostionA) || vf.containsPoint(searchPostionB)){
                 //if(vf.containsPoint(cube.centerPosition)){
                     //console.log('this cube is in the camera frustum: ' + cube.meshName);
-                    var distance = cameraRig.position.distanceTo(cube.placeholderMesh.position) + 50;
+                    var distance = cameraRig.position.distanceTo(cube.placeholderMesh.position);
                     //var bbHeight = cube.placeholderMesh.geometry.boundingBox.max.x - cube.placeholderMesh.geometry.boundingBox.min.x;
                     var bbheight = detailLevel.WorldCubeScale.y;
                     var height = 2 * Math.tan( Math.PI / 8) * distance;
