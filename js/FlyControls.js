@@ -166,7 +166,9 @@ THREE.FlyControls = function ( object, domElement ) {
 				// 	this.moveState.right = 1;
 				// }
 				// this.lastMouseX = event.clientX;
-				// this.updateMovementVector();
+				this.moveState.left   = - ( ( event.pageX - container.offset[ 0 ] ) - halfWidth  ) / halfWidth;
+				this.moveState.back =   ( ( event.pageY - container.offset[ 1 ] ) - halfHeight ) / halfHeight;
+				this.updateMovementVector();
 				break;
 
 			}
@@ -185,7 +187,7 @@ THREE.FlyControls = function ( object, domElement ) {
 
 			this.moveState.yawLeft = this.moveState.pitchDown = 0;
 			this.moveState.left = 0;
-			this.moveState.right = 0;
+			this.moveState.back = 0;
 			//this.lastMouseX = 0;
 		} else {
 
