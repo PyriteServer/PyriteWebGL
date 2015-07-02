@@ -191,6 +191,11 @@ var CubeContainer = (function () {
             loader.load(_this.geometryUrl + "?fmt=ebo", function (mesh) {
                 _this.mesh = mesh;
                 mesh.name = _this.meshName;
+                var material = new THREE.MeshBasicMaterial();
+                material.map = texture;
+                material.map.needsUpdate = true;
+                material.needsUpdate = true;
+                mesh.material = material;
                 mesh.geometry.computeBoundingBox();
                 mesh.geometry.applyMatrix(_this.toggleYZ);
                 _this.scene.remove(_this.placeholderMesh);
@@ -213,6 +218,11 @@ var CubeContainer = (function () {
                         child.geometry.computeVertexNormals();
                         child.name = _this.meshName;
                         _this.mesh = child;
+                        var material = new THREE.MeshBasicMaterial();
+                        material.map = texture;
+                        material.map.needsUpdate = true;
+                        material.needsUpdate = true;
+                        child.material = material;
                         child.geometry.applyMatrix(_this.toggleYZ);
                         _this.scene.remove(_this.placeholderMesh);
                         _this.scene.add(child);
