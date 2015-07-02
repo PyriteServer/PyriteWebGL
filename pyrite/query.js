@@ -71,7 +71,7 @@ var PyriteQuery = (function () {
           break;
           case 3:
           return 0.5;
-          break;  
+          break;
         };
     };
     PyriteQuery.prototype.getLODLower = function(dl){
@@ -84,7 +84,7 @@ var PyriteQuery = (function () {
           break;
           case 3:
           return 0.11;
-          break;  
+          break;
         };
     };
     PyriteQuery.prototype.loadDetailLevels = function (onLoad) {
@@ -148,6 +148,12 @@ var PyriteQuery = (function () {
                         cubeContainer.useEbo = Config.fmt == "ebo";
                         cubeContainer.useCtm = Config.fmt == "ctm";
                         cubeContainer.debug = Config.debug == 1;
+                        cubeContainer.textureCoords = dl.TextureCoordinatesForCube(cubeContainer.cube.x, cubeContainer.cube.y);
+                        cubeContainer.textureUrl = _this.GetTexturePath(dl.Name, cubeContainer.textureCoords.x, cubeContainer.textureCoords.y);
+                        cubeContainer.geometryUrl = _this.GetModelPath(dl.Name, cubeContainer.cube.x, cubeContainer.cube.y, cubeContainer.cube.z);
+                        if(!_this.loader.textureState.contains(cubeContainer.textureUrl)){
+                            _this.loader.textureState.set(cubeContainer.textureUrl, 'unloaded');
+                        }
                         dl.Cubes.push(cubeContainer);
                     }
                     dl.loadCubeContainers();

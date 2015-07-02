@@ -47,7 +47,7 @@
         if (queries['debug']) {
             Config.debug = parseInt(queries['debug']);
         }
-        
+
         if (queries['showcubes']) {
             Config.showcubes = parseInt(queries['showcubes']);
         }
@@ -83,6 +83,9 @@
         this.controls.autoForward = false;
         this.controls.dragToLook = true;
 
+        // var orbitControls = new THREE.OrbitControls(this.cameraRig, container);
+        // this.controls = orbitControls;
+
         //// skybox
         //this.setSkybox();
 
@@ -98,9 +101,9 @@
         }, false);
 
         this.addControls(container);
-        
+
         // var axisHelper = new THREE.AxisHelper( 50 );
-        // this.scene.add( axisHelper ); 
+        // this.scene.add( axisHelper );
     }
     Pyrite.prototype.addControls = function(container) {
         var _this = this;
@@ -115,9 +118,9 @@
             return _this.resetCamera();
         }, false);
         container.appendChild(button);
-        
+
         //var controlmap = document.createElement('table');
-        
+
     };
     Pyrite.prototype.setSkybox = function () {
         this.texture_placeholder = document.createElement('canvas');
@@ -156,7 +159,7 @@
         this.cameraRot = euler;
         this.cameraRig.position.set(positon.x, positon.y, positon.z);
         this.camera.rotation.set(euler.x, euler.y, euler.z, euler.order);
-        
+
         // if(lookAt !== 'undefined')
         //     this.camera.lookAt(lookAt);
     };
@@ -202,7 +205,7 @@
 
     Pyrite.prototype.start = function () {
         var _this = this;
-        this.loader.load(this.camera);
+        this.loader.load(this.cameraRig);
         requestAnimationFrame(function () {
             return _this.animate();
         });
