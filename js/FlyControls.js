@@ -152,7 +152,7 @@ THREE.FlyControls = function ( object, domElement ) {
 			var halfWidth  = container.size[ 0 ] / 2;
 			var halfHeight = container.size[ 1 ] / 2;
 
-			switch ( event.button ) {
+			switch ( event.buttons ) {
 
 				case 0:
 				this.moveState.yawLeft   = - ( ( event.pageX - container.offset[ 0 ] ) - halfWidth  ) / halfWidth;
