@@ -197,12 +197,14 @@ var PyriteLoader = (function () {
                 var searchPostionA = new THREE.Vector3().copy(cube.placeholderMesh.position).add(cube.placeholderMesh.geometry.boundingBox.min);
                 var searchPostionB = new THREE.Vector3().copy(cube.placeholderMesh.position).add(cube.placeholderMesh.geometry.boundingBox.max);
                 if(vf.intersectsObject(cube.placeholderMesh)){
-                //if(vf.containsPoint(cube.placeholderMesh.position)){
-                //if(vf.containsPoint(cube.placeholderMesh.position) || vf.containsPoint(searchPostionA) || vf.containsPoint(searchPostionB)){
-                //if(vf.containsPoint(cube.centerPosition)){
-                    //console.log('this cube is in the camera frustum: ' + cube.meshName);
                     var distance = cameraRig.position.distanceTo(cube.placeholderMesh.position);
-                    //var bbHeight = cube.placeholderMesh.geometry.boundingBox.max.x - cube.placeholderMesh.geometry.boundingBox.min.x;
+                    // if(distance <= detailLevel.UpgradeDistance){
+                    //         if(!cube.isLoaded)
+                    //             cubesToLoad.push(cube);
+                    // }else if(distance >= detailLevel.DowngradeDistance || typeof nextdl !== 'undefined' && distance >= nextdl.UpgradeDistance){
+                    //         if(cube.isLoaded)
+                    //             cubesToUnload.push(cube);
+                    // }
                     var bbheight = detailLevel.WorldCubeScale.y;
                     var height = 2 * Math.tan( Math.PI / 8) * distance;
                     var vpPercentage = bbheight / height;
@@ -224,8 +226,7 @@ var PyriteLoader = (function () {
                         cubesToUnload.push(cube);
                 }
 
-
-                // var distance = cameraRig.position.distanceTo(cube.placeholderMesh.position);
+                //var distance = cameraRig.position.distanceTo(cube.placeholderMesh.position);
                 // //var bbHeight = cube.placeholderMesh.geometry.boundingBox.max.x - cube.placeholderMesh.geometry.boundingBox.min.x;
                 // var bbheight = detailLevel.WorldCubeScale.y;
                 // var height = 2 * Math.tan( Math.PI / 8) * distance;
@@ -237,17 +238,6 @@ var PyriteLoader = (function () {
                 //     if(!cube.isLoaded)
                 //         cubesToLoad.push(cube);
                 // }else if (vpPercentage <= lower || vpPercentage > upper && nextdl){
-                //     // if(prevdl) // only unload if there is a lower detail level
-                //     //     cubesToUnload.put(cubeKey, cube);
-                //     if(cube.isLoaded)
-                //         cubesToUnload.push(cube);
-                // }
-
-
-                // if(vpPercentage <= detailLevel.LODUpperThreshold && vpPercentage > detailLevel.LODLowerThreshold){
-                //     if(!cube.isLoaded)
-                //         cubesToLoad.push(cube);
-                // }else if (vpPercentage <= detailLevel.LODLowerThreshold || vpPercentage > detailLevel.LODUpperThreshold && nextdl){
                 //     // if(prevdl) // only unload if there is a lower detail level
                 //     //     cubesToUnload.put(cubeKey, cube);
                 //     if(cube.isLoaded)
