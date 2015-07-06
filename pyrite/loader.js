@@ -210,7 +210,7 @@ var PyriteLoader = (function () {
                     var vpPercentage = bbheight / height;
 
                     var lower = typeof prevdl !== 'undefined' ?  detailLevel.WorldCubeScale.y / prevdl.WorldCubeScale.y : 0.35;
-                    lower *= 1.1;
+                    lower *= 0.9;
                     var upper = (1 + lower) * 1.1;
                     if(vpPercentage <= upper && vpPercentage > lower){
                         if(!cube.isLoaded)
