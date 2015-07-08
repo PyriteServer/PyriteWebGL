@@ -53,7 +53,7 @@
         }
 
         var container = document.getElementById('container');
-        document.body.appendChild(container);
+        //document.body.appendChild(container);
 
         this.loader = new PyriteLoader(this);
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
@@ -75,7 +75,7 @@
         container.appendChild(this.renderer.domElement);
 
         this.controls = new THREE.FlyControls(this.cameraRig);
-        this.controls.movementSpeed = 200;
+        this.controls.movementSpeed = 100;
         this.controls.domElement = container;
         this.controls.rollSpeed = Math.PI / 24;
 
@@ -197,6 +197,8 @@
     Pyrite.prototype.update = function () {
         //this.skyboxmesh.position.set(this.camera.position.x, this.camera.position.y, this.camera.position.z);
         this.loader.update(this.cameraRig);
+        var movespeedText = document.getElementById('movespeed');
+        movespeedText.innerText = this.controls.movementSpeed;
     };
 
     Pyrite.prototype.render = function () {

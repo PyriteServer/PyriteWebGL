@@ -50,42 +50,33 @@ var PyriteQuery = (function () {
                     dl.WorldBoundsSize = dl.WorldBoundsMax.sub(dl.WorldBoundsMin);
                     dl.DowngradeDistance = dl.WorldCubeScale.length() * _this.downgradeFactor + _this.downgradeConstant;
                     dl.UpgradeDistance = dl.WorldCubeScale.length() * _this.upgradeFactor + _this.upgradeConstant;
-                    // dl.LODUpperThreshold = _this.getLODUpper(dl);
-                    // dl.LODLowerThreshold = _this.getLODLower(dl);
                     dl.LODUpperThreshold = 0.95;
                     dl.LODLowerThreshold = 0.35;
                     dl.worldCenterPos = new THREE.Vector3();
                     that.DetailLevels.push(dl);
                 }
+                if(Config.useworldbounds){
+                    // calculate the world bounds from the metaData
+                    var highestlod = detailLevels[0];
+                    var lowestlod = detailLevels[detailLevels.length - 1];
+                    var altitudeTransform = 0 - lowestlod.modelBounds.min.z;
+                    var min = new THREE.Vector3(highestlod.modelBounds.min.x + lowestlod.worldCubeScale.x / 2,
+                    highestlod.modelBounds.min.z + lowestlod.worldCubeScale.z / 4,
+                    highestlod.modelBounds.min.y + lowestlod.worldCubeScale.y / 2);
+                    var max = new THREE.Vector3(highestlod.modelBounds.max.x - lowestlod.worldCubeScale.x / 2,
+                    highestlod.modelBounds.max.z + lowestlod.worldCubeScale.z * 1.5,
+                    highestlod.modelBounds.max.y - lowestlod.worldCubeScale.y / 2);
+                    // var min = new THREE.Vector3(highestlod.modelBounds.min.x,
+                    // highestlod.modelBounds.min.z,
+                    // highestlod.modelBounds.min.y);
+                    // var max = new THREE.Vector3(highestlod.modelBounds.max.x,
+                    // highestlod.modelBounds.max.z + altitudeTransform,
+                    // highestlod.modelBounds.max.y);
+                    _this.loader.pyrite.controls.movementBounds = new THREE.Box3(min, max);
+                };
                 onLoad();
             }
         });
-    };
-    PyriteQuery.prototype.getLODUpper = function(dl){
-        switch(dl.Value){
-          case 1:
-          return 1.0;
-          break;
-          case 2:
-          return 0.75;
-          break;
-          case 3:
-          return 0.5;
-          break;
-        };
-    };
-    PyriteQuery.prototype.getLODLower = function(dl){
-        switch(dl.Value){
-          case 1:
-          return 0.80;
-          break;
-          case 2:
-          return 0.60;
-          break;
-          case 3:
-          return 0.11;
-          break;
-        };
     };
     PyriteQuery.prototype.loadDetailLevels = function (onLoad) {
         var _this = this;

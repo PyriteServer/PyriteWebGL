@@ -8,8 +8,9 @@ var Config = (function () {
     Config.set = "PerthNew";
     Config.lod = 4;
     Config.maxlod = 2;
-    Config.fmt = "obj";
+    Config.fmt = "ctm";
     Config.debug = 0;
     Config.showcubes = 0;
+    Config.useworldbounds = 1;
     return Config;
 })();

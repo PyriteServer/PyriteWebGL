@@ -10,7 +10,10 @@ THREE.FlyControls = function ( object, domElement ) {
 	if ( domElement ) this.domElement.setAttribute( 'tabindex', -1 );
 
 	// API
-
+	this.movementBounds;
+	this.movementMax = 300;
+	this.movementMin = 30;
+	this.movementIncrement = 10;
 	this.movementSpeed = 1.0;
 	this.rollSpeed = 0.005;
 
@@ -74,7 +77,17 @@ THREE.FlyControls = function ( object, domElement ) {
 
 			// case 81: /*Q*/ this.moveState.rollLeft = 1; break;
 			// case 69: /*E*/ this.moveState.rollRight = 1; break;
+			case 107:
+			case 187:
+			if(this.movementSpeed + this.movementIncrement <= this.movementMax)
+				this.movementSpeed += this.movementIncrement;
+			break;
 
+			case 109:
+			case 189:
+			if(this.movementSpeed - this.movementIncrement >= this.movementMin)
+				this.movementSpeed -= this.movementIncrement;
+			break;
 		}
 
 		this.updateMovementVector();
@@ -210,9 +223,33 @@ THREE.FlyControls = function ( object, domElement ) {
 		var moveMult = delta * this.movementSpeed;
 		var rotMult = delta * this.rollSpeed;
 
-		this.object.translateX( this.moveVector.x * moveMult );
-		this.object.translateY( this.moveVector.y * moveMult );
-		this.object.translateZ( this.moveVector.z * moveMult );
+		if(typeof this.movementBounds !== 'undefined'){
+			var x = this.object.position.x + this.moveVector.x * moveMult;
+			var y = this.object.position.y + this.moveVector.y * moveMult;
+			var z = this.object.position.z + this.moveVector.z * moveMult;
+
+			var newPosition = new THREE.Vector3(x, y, z);
+
+			if(this.movementBounds.distanceToPoint(newPosition) == 0){
+				this.object.translateX( this.moveVector.x * moveMult );
+				this.object.translateY( this.moveVector.y * moveMult );
+				this.object.translateZ( this.moveVector.z * moveMult );
+			}
+
+			// if(x >= this.movementBounds.min.x && x <= this.movementBounds.max.x){
+			// 	this.object.translateX( this.moveVector.x * moveMult );
+			// }
+			// if(y >= this.movementBounds.min.y && y <= this.movementBounds.max.y){
+			// 	this.object.translateY( this.moveVector.y * moveMult );
+			// }
+			// if(z >= this.movementBounds.min.z && z <= this.movementBounds.max.z){
+			// 	this.object.translateZ( this.moveVector.z * moveMult );
+			// }
+		}else{
+			this.object.translateX( this.moveVector.x * moveMult );
+			this.object.translateY( this.moveVector.y * moveMult );
+			this.object.translateZ( this.moveVector.z * moveMult );
+		}
 
 		// modified to find a camera in the children of the object - jfox
 		if(this.object.children.length > 0){
