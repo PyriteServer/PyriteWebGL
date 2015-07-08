@@ -194,9 +194,10 @@ var PyriteLoader = (function () {
             for(var c = 0; c < detailLevel.Cubes.length; c++){
 
                 var cube = detailLevel.Cubes[c];
-                var searchPostionA = new THREE.Vector3().copy(cube.placeholderMesh.position).add(cube.placeholderMesh.geometry.boundingBox.min);
-                var searchPostionB = new THREE.Vector3().copy(cube.placeholderMesh.position).add(cube.placeholderMesh.geometry.boundingBox.max);
+                // var searchPostionA = new THREE.Vector3().copy(cube.placeholderMesh.position).add(cube.placeholderMesh.geometry.boundingBox.min);
+                // var searchPostionB = new THREE.Vector3().copy(cube.placeholderMesh.position).add(cube.placeholderMesh.geometry.boundingBox.max);
                 if(vf.intersectsObject(cube.placeholderMesh)){
+                    //cube.showBoundingSphere(true);
                     var distance = cameraRig.position.distanceTo(cube.placeholderMesh.position);
                     // if(distance <= detailLevel.UpgradeDistance){
                     //         if(!cube.isLoaded)
@@ -222,6 +223,7 @@ var PyriteLoader = (function () {
                             cubesToUnload.push(cube);
                     }
                 }else{
+                    //cube.showBoundingSphere(false);
                     if(cube.isLoaded)
                         cubesToUnload.push(cube);
                 }

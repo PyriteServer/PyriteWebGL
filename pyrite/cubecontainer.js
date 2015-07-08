@@ -32,6 +32,18 @@ var CubeContainer = (function () {
         );
         this.initialized = true;
     };
+    CubeContainer.prototype.showBoundingSphere = function(show){
+        if(typeof this.boundingSphereMesh === 'undefined'){
+            this.boundingSphereMesh = new THREE.Mesh(new THREE.SphereGeometry(this.placeholderMesh.geometry.boundingSphere.radius), this.placeholderMaterial);
+            this.boundingSphereMesh.position.set(this.placeholderMesh.position.x, this.placeholderMesh.position.y, this.placeholderMesh.position.z)
+        }
+
+        if(show){
+            this.scene.add(this.boundingSphereMesh);
+        } else {
+            this.scene.remove(this.boundingSphereMesh);
+        }
+    };
     CubeContainer.prototype.addPlaceholder = function (show) {
         var worldScale = new THREE.Vector3().copy(this.detailLevel.WorldCubeScale);
         this.placeholderMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.35 }); //red
