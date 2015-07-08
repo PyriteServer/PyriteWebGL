@@ -2,6 +2,7 @@
     function Pyrite() {
         var _this = this;
         this.clock = new THREE.Clock();
+        this.cameraRig = new THREE.Object3D();
         this.cameraPos = new THREE.Vector3();
         this.cameraRot = new THREE.Euler();
         this.loadTexture = function loadTexture(path) {
@@ -46,22 +47,23 @@
         if (queries['debug']) {
             Config.debug = parseInt(queries['debug']);
         }
-        
+
         if (queries['showcubes']) {
             Config.showcubes = parseInt(queries['showcubes']);
         }
 
         var container = document.getElementById('container');
-        document.body.appendChild(container);
+        //document.body.appendChild(container);
 
         this.loader = new PyriteLoader(this);
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
+        this.cameraRig.add(this.camera);
         this.resetCamera();
 
         this.scene = new THREE.Scene();
         var ambient = new THREE.AmbientLight(0x101030);
         this.scene.add(ambient);
-
+        this.scene.add(this.cameraRig);
         var directionalLight = new THREE.DirectionalLight(0xffeedd);
         directionalLight.position.set(0, 0, 1);
         this.scene.add(directionalLight);
@@ -72,8 +74,8 @@
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(this.renderer.domElement);
 
-        this.controls = new THREE.FlyControls(this.camera);
-        this.controls.movementSpeed = 200;
+        this.controls = new THREE.FlyControls(this.cameraRig);
+        this.controls.movementSpeed = 100;
         this.controls.domElement = container;
         this.controls.rollSpeed = Math.PI / 24;
 
@@ -81,8 +83,11 @@
         this.controls.autoForward = false;
         this.controls.dragToLook = true;
 
+        // var orbitControls = new THREE.OrbitControls(this.cameraRig, container);
+        // this.controls = orbitControls;
+
         //// skybox
-        this.setSkybox();
+        //this.setSkybox();
 
         this.stats = new Stats();
         this.stats.domElement.style.position = 'absolute';
@@ -96,11 +101,12 @@
         }, false);
 
         this.addControls(container);
-        
-        var axisHelper = new THREE.AxisHelper( 50 );
-        this.scene.add( axisHelper ); 
+
+        // var axisHelper = new THREE.AxisHelper( 50 );
+        // this.scene.add( axisHelper );
     }
     Pyrite.prototype.addControls = function(container) {
+        var _this = this;
         var button = document.createElement("button");
         button.name = "cameraresetbutton";
         button.innerText = "Reset Camera";
@@ -112,9 +118,9 @@
             return _this.resetCamera();
         }, false);
         container.appendChild(button);
-        
-        var controlmap = document.createElement('table');
-        
+
+        //var controlmap = document.createElement('table');
+
     };
     Pyrite.prototype.setSkybox = function () {
         this.texture_placeholder = document.createElement('canvas');
@@ -151,15 +157,15 @@
     Pyrite.prototype.setCamera = function (positon, euler, lookAt) {
         this.cameraPos = positon;
         this.cameraRot = euler;
-        this.camera.position.set(positon.x, positon.y, positon.z);
+        this.cameraRig.position.set(positon.x, positon.y, positon.z);
         this.camera.rotation.set(euler.x, euler.y, euler.z, euler.order);
-        
+
         // if(lookAt !== 'undefined')
         //     this.camera.lookAt(lookAt);
     };
 
     Pyrite.prototype.resetCamera = function () {
-        this.camera.position.set(this.cameraPos.x, this.cameraPos.y, this.cameraPos.z);
+        this.cameraRig.position.set(this.cameraPos.x, this.cameraPos.y, this.cameraPos.z);
         this.camera.rotation.set(this.cameraRot.x, this.cameraRot.y, this.cameraRot.z, this.cameraRot.order);
         //this.camera.rotation.set(THREE.Math.degToRad(45), THREE.Math.degToRad(90), THREE.Math.degToRad(45));
     };
@@ -189,8 +195,10 @@
     };
 
     Pyrite.prototype.update = function () {
-        this.skyboxmesh.position.set(this.camera.position.x, this.camera.position.y, this.camera.position.z);
-        this.loader.update(this.camera);
+        //this.skyboxmesh.position.set(this.camera.position.x, this.camera.position.y, this.camera.position.z);
+        this.loader.update(this.cameraRig);
+        var movespeedText = document.getElementById('movespeed');
+        movespeedText.innerText = this.controls.movementSpeed;
     };
 
     Pyrite.prototype.render = function () {
@@ -199,7 +207,7 @@
 
     Pyrite.prototype.start = function () {
         var _this = this;
-        this.loader.load(this.camera);
+        this.loader.load(this.cameraRig);
         requestAnimationFrame(function () {
             return _this.animate();
         });

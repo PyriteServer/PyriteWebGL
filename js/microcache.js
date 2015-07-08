@@ -19,7 +19,7 @@ var MicroCache	= function(){
 		},
 		getSet	: function(key, value){
 			if( !this.contains(key) ){
-				this.set(key, typeof value == 'function' ? value() : value )
+				this.set(key, typeof value == 'function' ? value() : value );
 			}
 			return this.get(key);
 		}

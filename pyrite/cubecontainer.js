@@ -9,10 +9,14 @@ var CubeContainer = (function () {
         this.debug = false;
         this.upgraded = false;
         this.upgrading = false;
-        this.textureQueue = new Array();
+        //this.textureQueue = new MicroCache();
+        this.textureCoords;
+        this.textureUrl;
+        this.geometryUrl;
         this.detailLevel = detailLevel;
         this.mesh;
         this.toggleYZ = new THREE.Matrix4();
+        this.centerPosition;
     }
     CubeContainer.prototype.init = function (scene, octree, showPlaceHolder) {
         this.scene = scene;
@@ -28,23 +32,33 @@ var CubeContainer = (function () {
         );
         this.initialized = true;
     };
+    CubeContainer.prototype.showBoundingSphere = function(show){
+        if(typeof this.boundingSphereMesh === 'undefined'){
+            this.boundingSphereMesh = new THREE.Mesh(new THREE.SphereGeometry(this.placeholderMesh.geometry.boundingSphere.radius), this.placeholderMaterial);
+            this.boundingSphereMesh.position.set(this.placeholderMesh.position.x, this.placeholderMesh.position.y, this.placeholderMesh.position.z)
+        }
+
+        if(show){
+            this.scene.add(this.boundingSphereMesh);
+        } else {
+            this.scene.remove(this.boundingSphereMesh);
+        }
+    };
     CubeContainer.prototype.addPlaceholder = function (show) {
         var worldScale = new THREE.Vector3().copy(this.detailLevel.WorldCubeScale);
         this.placeholderMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.35 }); //red
         this.placeholderMesh = new THREE.Mesh(new THREE.BoxGeometry(worldScale.x, worldScale.y, worldScale.z), this.placeholderMaterial);
         this.placeholderMesh.name = "ph_" + this.meshName;
-        // this.placeholderMesh.translateX(this.cube.worldCoords.x);
-        // this.placeholderMesh.translateY(this.cube.worldCoords.y);
-        // this.placeholderMesh.translateZ(this.cube.worldCoords.z);
-        ///this.placeholderMesh.position.set(this.cube.worldCoords.x, this.cube.worldCoords.y, this.cube.worldCoords.z);
         this.placeholderMesh.position.set(this.cube.worldCoords.x, this.cube.worldCoords.z, -this.cube.worldCoords.y);
-        //this.placeholderMesh.applyMatrix(this.toggleYZ);
-        //this.placeholderMesh.geometry.applyMatrix(this.toggleYZ);
         this.placeholderMesh.geometry.computeBoundingBox();
         this.placeholderMesh.geometry.computeBoundingSphere();
+        this.placeholderMesh.geometry.boundingSphere.center.set(this.cube.worldCoords.x, this.cube.worldCoords.z, -this.cube.worldCoords.y);
         if (show) {
             this.scene.add(this.placeholderMesh);
+
         }
+
+        //this.centerPosition = new THREE.Vector3(this.cube.worldCoords.x + (worldScale.x / 2), this.cube.worldCoords.z + (worldScale.z / 2), -this.cube.worldCoords.y + (worldScale.y / 2))
         var min = new THREE.Vector3(this.cube.x, this.cube.y, this.cube.z);
         var max = new THREE.Vector3(min.x + 1, min.y + 1, min.z + 1);
         this.bounds = new CubeBounds(this);
@@ -57,71 +71,181 @@ var CubeContainer = (function () {
         if (!this.initialized)
             throw "Cube container must be initialized before loading.";
         this.isLoading = true;
-        var textureCoords = this.detailLevel.TextureCoordinatesForCube(this.cube.x, this.cube.y);
-        var textureUrl = this.detailLevel.Query.GetTexturePath(this.detailLevel.Name, textureCoords.x, textureCoords.y);
-        var geometryUrl = this.detailLevel.Query.GetModelPath(this.detailLevel.Name, this.cube.x, this.cube.y, this.cube.z);
+        var _this = this;
+        // load the texture first - it might be slow to load the first few cubes
+        var textureState = this.detailLevel.Query.loader.textureState.get(this.textureUrl);
+        switch(textureState){
+            case 'loading':
+            setTimeout(function(){ _this.load();}, 500);
+            break;
+            case 'loaded':
+            var texture = this.detailLevel.Query.loader.cache.get(this.textureUrl);
+            _this.loadmesh(texture, callback);
+            break;
+            case 'unloaded':
+            console.log('texture image not loaded');
+            this.detailLevel.Query.loader.textureState.set(_this.textureUrl, 'loading');
+            THREE.ImageUtils.crossOrigin = 'anonymous';
+            THREE.ImageUtils.loadTexture(_this.textureUrl, THREE.UVMapping, function(texture){
+                _this.detailLevel.Query.loader.textureState.set(_this.textureUrl, 'loaded');
+                _this.detailLevel.Query.loader.cache.getSet(_this.textureUrl, texture);
+                _this.loadmesh(texture, callback);
+            });
+            break;
+        };
+        // var texture = this.detailLevel.Query.loader.cache.get(this.textureUrl);
+        // if(!texture || typeof texture.image === 'undefined'){
+        //     console.log('texture image not loaded');
+        //     THREE.ImageUtils.crossOrigin = 'anonymous';
+        //     THREE.ImageUtils.loadTexture(_this.textureUrl, THREE.UVMapping, function(texture){
+        //         _this.detailLevel.Query.loader.cache.getSet(_this.textureUrl, texture);
+        //         _this.loadmesh(texture);
+        //     });
+        // }else{
+        //     _this.loadmesh(texture);
+        // };
+
+        // if (this.useCtm) {
+        //     var loader = new THREE.CTMLoader(true);
+        //     loader.load(_this.geometryUrl + "?fmt=ctm&webgl=1",function (geometry) {
+        //         var material1 = new THREE.MeshLambertMaterial( { color: 0xf0ffff } );
+        //         var mesh = new THREE.Mesh(geometry, material1);
+        //         _this.mesh = mesh;
+        //         mesh.name = _this.meshName;
+        //         _this.gettexture(_this.textureUrl, mesh, function () {
+        //             mesh.geometry.applyMatrix(_this.toggleYZ);
+        //             _this.scene.remove(_this.placeholderMesh);
+        //             _this.scene.add(mesh);
+        //             _this.isLoaded = true;
+        //             _this.isLoading = false;
+        //             if (_this.debug) {
+        //                 _this.addBoundingBox(mesh, _this);
+        //             }
+        //             callback();
+        //         });
+        //     }); //, {useWorker: false, worker: new Worker("js/ctm/CTMWorker.js")} );
+        // } else if (this.useEbo) {
+        //     var loader = new EBOLoader();
+        //     loader.load(_this.geometryUrl + "?fmt=ebo", function (mesh) {
+        //         _this.mesh = mesh;
+        //         mesh.name = _this.meshName;
+        //
+        //         mesh.geometry.computeBoundingBox();
+        //         _this.gettexture(_this.textureUrl, mesh, function () {
+        //             mesh.geometry.applyMatrix(_this.toggleYZ);
+        //             _this.scene.remove(_this.placeholderMesh);
+        //             _this.scene.add(mesh);
+        //             _this.isLoaded = true;
+        //             _this.isLoading = false;
+        //             if (_this.debug) {
+        //                 _this.addBoundingBox(mesh, _this);
+        //             }
+        //             callback();
+        //         });
+        //     });
+        // }
+        // else {
+        //     var objLoader = new THREE.OBJLoader();
+        //     objLoader.crossOrigin = 'anonymous';
+        //     objLoader.load(_this.geometryUrl + "?fmt=obj", function (o) {
+        //         o.traverse(function (child) {
+        //             if (child instanceof THREE.Mesh) {
+        //                 child.geometry.computeVertexNormals();
+        //                 child.name = _this.meshName;
+        //                 _this.mesh = child;
+        //                 _this.gettexture(_this.textureUrl, child, function () {
+        //                     child.geometry.applyMatrix(_this.toggleYZ);
+        //                     _this.scene.remove(_this.placeholderMesh);
+        //                     _this.scene.add(child);
+        //                     _this.isLoaded = true;
+        //                     _this.isLoading = false;
+        //                     if (_this.debug) {
+        //                         _this.addBoundingBox(child, _this);
+        //                     }
+        //                     callback();
+        //                 });
+        //             }
+        //         });
+        //     });
+        // }
+    };
+    CubeContainer.prototype.loadmesh = function(texture, callback){
         var _this = this;
         if (this.useCtm) {
-            
             var loader = new THREE.CTMLoader(true);
-            //document.body.appendChild(loader.statusDomElement);
-            loader.load(geometryUrl + "?fmt=ctm",function (geometry) {
+            loader.load(_this.geometryUrl + "?fmt=ctm",function (geometry) {
                 var material1 = new THREE.MeshLambertMaterial( { color: 0xf0ffff } );
                 var mesh = new THREE.Mesh(geometry, material1);
                 _this.mesh = mesh;
                 mesh.name = _this.meshName;
-                _this.gettexture(textureUrl, mesh, function () {
-                    mesh.geometry.applyMatrix(_this.toggleYZ);
-                    _this.scene.remove(_this.placeholderMesh);
-                    _this.scene.add(mesh);
-                    _this.isLoaded = true;
-                    _this.isLoading = false;
-                    if (_this.debug) {
-                        _this.addBoundingBox(mesh, _this);
-                    }
+                mesh.geometry.applyMatrix(_this.toggleYZ);
+                var material = new THREE.MeshBasicMaterial();
+                material.map = texture;
+                material.map.needsUpdate = true;
+                material.needsUpdate = true;
+                mesh.material = material;
+                _this.scene.remove(_this.placeholderMesh);
+                _this.scene.add(mesh);
+                _this.isLoaded = true;
+                _this.isLoading = false;
+                if (_this.debug) {
+                    _this.addBoundingBox(mesh, _this);
+                    // var axisHelper = new THREE.AxisHelper(50);
+                    // axisHelper.position.set(_this.cube.worldCoords.x, _this.cube.worldCoords.z, -_this.cube.worldCoords.y);
+                    // _this.scene.add(axisHelper);
+                }
+                if(typeof callback === 'function'){
                     callback();
-                });
-            }, {useWorker: true, worker: new Worker("js/ctm/CTMWorker.js")} );
+                }
+            }); //, {useWorker: false, worker: new Worker("js/ctm/CTMWorker.js")} );
         } else if (this.useEbo) {
             var loader = new EBOLoader();
-            loader.load(geometryUrl + "?fmt=ebo", function (mesh) {
+            loader.load(_this.geometryUrl + "?fmt=ebo", function (mesh) {
                 _this.mesh = mesh;
                 mesh.name = _this.meshName;
-                
+                var material = new THREE.MeshBasicMaterial();
+                material.map = texture;
+                material.map.needsUpdate = true;
+                material.needsUpdate = true;
+                mesh.material = material;
                 mesh.geometry.computeBoundingBox();
-                _this.gettexture(textureUrl, mesh, function () {
-                    mesh.geometry.applyMatrix(_this.toggleYZ);
-                    _this.scene.remove(_this.placeholderMesh);
-                    _this.scene.add(mesh);
-                    _this.isLoaded = true;
-                    _this.isLoading = false;
-                    if (_this.debug) {
-                        _this.addBoundingBox(mesh, _this);
-                    }
+                mesh.geometry.applyMatrix(_this.toggleYZ);
+                _this.scene.remove(_this.placeholderMesh);
+                _this.scene.add(mesh);
+                _this.isLoaded = true;
+                _this.isLoading = false;
+                if (_this.debug) {
+                    _this.addBoundingBox(mesh, _this);
+                }
+                if(typeof callback === 'function'){
                     callback();
-                });
+                }
             });
-        }
-        else {
+        } else {
             var objLoader = new THREE.OBJLoader();
             objLoader.crossOrigin = 'anonymous';
-            objLoader.load(geometryUrl + "?fmt=obj", function (o) {
+            objLoader.load(_this.geometryUrl + "?fmt=obj", function (o) {
                 o.traverse(function (child) {
                     if (child instanceof THREE.Mesh) {
                         child.geometry.computeVertexNormals();
                         child.name = _this.meshName;
                         _this.mesh = child;
-                        _this.gettexture(textureUrl, child, function () {
-                            child.geometry.applyMatrix(_this.toggleYZ);
-                            _this.scene.remove(_this.placeholderMesh);
-                            _this.scene.add(child);
-                            _this.isLoaded = true;
-                            _this.isLoading = false;
-                            if (_this.debug) {
-                                _this.addBoundingBox(child, _this);
-                            }
+                        var material = new THREE.MeshBasicMaterial();
+                        material.map = texture;
+                        material.map.needsUpdate = true;
+                        material.needsUpdate = true;
+                        child.material = material;
+                        child.geometry.applyMatrix(_this.toggleYZ);
+                        _this.scene.remove(_this.placeholderMesh);
+                        _this.scene.add(child);
+                        _this.isLoaded = true;
+                        _this.isLoading = false;
+                        if (_this.debug) {
+                            _this.addBoundingBox(child, _this);
+                        }
+                        if(typeof callback === 'function'){
                             callback();
-                        });
+                        }
                     }
                 });
             });
@@ -131,7 +255,7 @@ var CubeContainer = (function () {
         this.isUnloading = true;
         if (this.debug)
             this.scene.remove(this.bbox);
-            
+
         if(this.mesh){
             this.scene.remove(this.mesh);
             this.mesh.geometry.dispose();
@@ -147,6 +271,14 @@ var CubeContainer = (function () {
             THREE.ImageUtils.crossOrigin = 'anonymous';
             return THREE.ImageUtils.loadTexture(textureUrl);
         });
+        if(!texture.img || typeof texture.img === 'undefined'){
+            console.log('texture image not loaded');
+            // var waitList = this.textureQueue.getSet(textureUrl, function(){
+            //    return new Array();
+            // });
+            // waitList.push(mesh);
+            // return;
+        }
         var material = new THREE.MeshBasicMaterial();
         material.map = texture;
         material.map.needsUpdate = true;
