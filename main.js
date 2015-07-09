@@ -68,7 +68,7 @@
         directionalLight.position.set(0, 0, 1);
         this.scene.add(directionalLight);
 
-        this.renderer = new THREE.WebGLRenderer();
+        this.renderer = new THREE.WebGLRenderer([antialias:true]);
         this.renderer.setClearColor(0xf0f0f0);
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
