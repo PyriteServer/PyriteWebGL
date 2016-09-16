@@ -1,19 +1,18 @@
-importScripts( "lzma.js", "ctm.js" );
+/* eslint-disable */
+// Disable ES LINT Because external (Three.js)
 
-self.onmessage = function( event ) {
+importScripts('lzma.js', 'ctm.js');
 
-	var files = [];
+self.onmessage = function (event) {
+	                                    const files = [];
 
-	for ( var i = 0; i < event.data.offsets.length; i ++ ) {
+	                                        for (let i = 0; i < event.data.offsets.length; i++) {
+		                                    const stream = new CTM.Stream(event.data.data);
+		                                        stream.offset = event.data.offsets[i];
 
-		var stream = new CTM.Stream( event.data.data );
-		stream.offset = event.data.offsets[ i ];
-
-		files[ i ] = new CTM.File( stream );
-
+		                                        files[i] = new CTM.File(stream);
 	}
 
-	self.postMessage( files );
-	self.close();
-
-}
+	                                        self.postMessage(files);
+	                                        self.close();
+};

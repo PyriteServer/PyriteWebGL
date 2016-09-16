@@ -20,7 +20,12 @@
   "keywords": [],
   "author": "Pyrite3d",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "jquery": "^3.1.0",
+    "three": "^0.81.0",
+    "tween.js": "^16.3.5",
+    "utm-latlng": "^1.0.3"
+  },
   "devDependencies": {
     "babel-cli": "^6.4.0",
     "babel-eslint": "^6.1.0",

@@ -1,59 +1,64 @@
-/*eslint no-unused-vars: ["off", { "args": "none" }]*/
+/* eslint no-unused-vars: ["off", { "args": "none" }]*/
 
-function Dictionary(overwrite){
-	this.overwrite = overwrite === true;
-	var __k = [];
-	var __v = [];
+class Dictionary {
+  constructor(overwrite) {
+    this.overwrite = overwrite;
+    this.keys = [];
+    this.values = [];
+  }
 
-	this.put = function(key, value){
-		if(!this.overwrite || __k.indexOf(key) === -1){
-			__k.push(key);
-			__v.push(value);
-		}
-	};
+  put(key, value) {
+    if (!this.overwrite || this.keys.indexOf(key) === -1) {
+      this.keys.push(key);
+      this.values.push(value);
+    }
+  }
 
-	this.get = function(key){
-        var idx=__k.indexOf(key);
-		if(idx >= 0){
-            return __v[idx];
-		}
-        return null;
-	};
+  get(key) {
+    const idx = this.keys.indexOf(key);
+    if (idx >= 0) {
+      return this.values[idx];
+    }
 
-	this.contains = function(key){
-		var result = this.get(key);
+    return null;
+  }
 
-		if(result !== null)
-			return true;
-		else
-			return false;
-	};
+  contains(key) {
+    const result = this.get(key);
 
-	this.remove = function(key){
-		var i = __k.indexOf(key);
-		if(i != -1){
-			__k.splice(i,1);
-			__v.splice(i,1);
-		}
-    };
+    if (result !== null) {
+      return true;
+    }
 
-	this.clearAll = function(value){
-		for(var i = 0; i < __v.length; i++){
-			if(__v[i] == value){
-				__k.splice(i,1);
-				__v.splice(i,1);
-			}
-		}
-	};
+    return false;
+  }
 
-	this.iterate = function(func){
-		for(var i = 0; i < __k.length; i++){
-			func(__k[i], __v[i]);
-		}
-	};
+  remove(key) {
+    const i = this.keys.indexOf(key);
+    if (i !== -1) {
+      this.keys.splice(i, 1);
+      this.values.splice(i, 1);
+    }
+  }
 
-	this.length = function(){
-		return __v.length;
-	};
+  clearAll(value) {
+    for (let i = 0; i < this.values.length; i += 1) {
+      if (this.values[i] === value) {
+        this.keys.splice(i, 1);
+        this.values.splice(i, 1);
+      }
+    }
+  }
 
+  iterate(func) {
+    for (let i = 0; i < this.keys.length; i += 1) {
+      func(this.keys[i], this.values[i]);
+    }
+  }
+
+  length() {
+    return this.values.length;
+  }
 }
+
+export default Dictionary;

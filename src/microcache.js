@@ -5,29 +5,47 @@
  *
  * @tags inmemory, keyvalue, cache, node, browser
 */
-var MicroCache	= function(){
-	var _values	= {};
-	var _length = 0;
-	return {
-		get	: function(key){ return _values[key];	},
-		contains: function(key){ return key in _values;	},
-		remove	: function(key){ delete _values[key]; _length--;	},
-		set	: function(key, value){	if(!this.contains(key)) { _length++; } _values[key] = value; },
-		values	: function(){ return _values;	},
-		length : function () {
-			return _length;
-		},
-		getSet	: function(key, value){
-			if( !this.contains(key) ){
-				this.set(key, typeof value == 'function' ? value() : value );
-			}
-			return this.get(key);
-		}
-	}
+
+class MicroCache {
+  constructor() {
+    this.values = {};
+    this.length = 0;
+  }
+
+  get(key) {
+    return this.values[key];
+  }
+
+  contains(key) {
+    return key in this.values;
+  }
+
+  remove(key) {
+    delete this.values[key];
+    this.length -= 1;
+  }
+
+  set(key, value) {
+    if (!this.contains(key)) {
+      this.length += 1;
+    }
+    this.values[key] = value;
+  }
+
+  values() {
+    return this.values;
+  }
+
+  length() {
+    return this.length;
+  }
+
+  getSet(key, value) {
+    if (!this.contains(key)) {
+      this.set(key, typeof value === 'function' ? value() : value);
+    }
+    return this.get(key);
+  }
 }
 
-
-// export in common js
-if( typeof module !== 'undefined' && ('exports' in module)){
-	module.exports	= MicroCache;
-}
+export default MicroCache;
