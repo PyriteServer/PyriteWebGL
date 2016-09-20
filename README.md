@@ -6,13 +6,16 @@
 ## Install
 
 ```
-npm install --save PyriteWebGL
+npm install --save pyrite-webgl
 ```
 
 
 ## Usage
 
-```
-TODO
+```js
+import Pyrite from 'pyrite-webgl';
+
+const pyrite = new Pyrite(container, id, config);
+pyrite.start();
 ```
 
