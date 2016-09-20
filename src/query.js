@@ -3,7 +3,6 @@
 
 import THREE from 'three';
 import $ from 'jquery';
-import projectConfig from 'config';
 import PyriteDetailLevel from './detaillevel.js';
 import Cube from './cube.js';
 import CubeContainer from './cubecontainer.js';
@@ -351,7 +350,7 @@ class PyriteQuery {
 
   getModelPath(lod, x, y, z) {
     // simple determinate way to assign two servers?  I think this works
-    const host = projectConfig.pyriteHosts[x % 2];
+    const host = this.config.hosts[x % 2];
     return `${this.versionUrl.replace('api.pyrite3d.org', host)}models/${lod}/${x},${y},${z}`;
   }
 
