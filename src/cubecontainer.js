@@ -3,7 +3,7 @@
 /* eslint comma-dangle: ["error", "only-multiline"]*/
 /* global URL:false, document:false */
 
-import THREE from 'three';
+import * as THREE from 'three';
 import CubeBounds from './cubebounds.js';
 import CTMLoader from './ctm/CTMLoader.js';
 import Pyrite from './pyrite.js';
@@ -320,7 +320,7 @@ class CubeContainer {
     // }
     const cache = this.detailLevel.isLowestLod();
 
-    const loader = new THREE.CTMLoader();
+    const loader = new CTMLoader();
 
     loader.load(`${this.geometryUrl}?fmt=ctm`, (geometry) => {
       // this.detailLevel.Query.loader.cache.getSet(this.geometryUrl, geometry);

@@ -15,7 +15,7 @@
 */
 /* eslint max-len: ["off"]*/
 /* eslint comma-dangle: ["error", "only-multiline"]*/
-import THREE from 'three';
+import * as THREE from 'three';
 
 THREE.ShaderLib.sky = {
 

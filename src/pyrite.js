@@ -2,7 +2,7 @@
 /* eslint comma-dangle: ["error", "only-multiline"]*/
 /* global window:false, document:false requestAnimationFrame:false cancelAnimationFrame: false */
 
-import THREE from 'three';
+import * as THREE from 'three';
 import TWEEN from 'tween.js';
 import UTMLatLng from 'utm-latlng';
 import Config from './config.js';
@@ -138,7 +138,7 @@ class Pyrite {
     this.started = false;
     this.markersLoaded = false;
 
-    const ctmloader = new THREE.CTMLoader();
+    const ctmloader = new CTMLoader();
 
     ctmloader.load('http://projectgreen.azureedge.net/skybox/marker_clubs_normals.ctm',
       (markerGeometry) => {

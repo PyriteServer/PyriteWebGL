@@ -1,7 +1,7 @@
 /* eslint no-unused-vars: ["off", { "args": "none" }]*/
 /* eslint no-console: ["off"]*/
 
-import THREE from 'three';
+import * as THREE from 'three';
 import $ from 'jquery';
 import PyriteDetailLevel from './detaillevel.js';
 import Cube from './cube.js';

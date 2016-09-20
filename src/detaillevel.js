@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 import Cube from './cube.js';
 import CubeContainer from './cubecontainer.js';
 

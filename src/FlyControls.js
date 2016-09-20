@@ -1,7 +1,7 @@
 /* eslint comma-dangle: ["error", "only-multiline"]*/
 /* global document:false, window:false */
 
-import THREE from 'three';
+import * as THREE from 'three';
 
 /**
  * @author James Baicoianu / http://www.baicoianu.com/ (original)
