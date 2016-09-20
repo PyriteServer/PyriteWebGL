@@ -7,7 +7,7 @@ import THREE from 'three';
 import CubeBounds from './cubebounds.js';
 import CTMLoader from './ctm/CTMLoader.js';
 import Pyrite from './pyrite.js';
-import Api from '../../actions/api.js';
+import Api from './api.js';
 import PyriteException from './pyriteexception.js';
 
 class CubeContainer {
@@ -140,7 +140,7 @@ class CubeContainer {
 
         const texture = new THREE.Texture();
         const scope = this;
-        CubeContainer.api.cachedGet(this.textureUrl, 'blob').then((result) => {
+        Api.cachedGet(this.textureUrl, 'blob').then((result) => {
           const image = document.createElementNS('http://www.w3.org/1999/xhtml', 'img');
           image.onload = function onload() {
             URL.revokeObjectURL(image.src);
@@ -386,8 +386,6 @@ class CubeContainer {
     return false;
   }
 }
-
-CubeContainer.api = new Api();
 
 CubeContainer.placeholderMaterial = {
   1: new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.35 }),

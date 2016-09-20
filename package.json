@@ -21,7 +21,10 @@
   "author": "Pyrite3d",
   "license": "MIT",
   "dependencies": {
+    "detect-browser": "^1.5.0",
     "jquery": "^3.1.0",
+    "localforage": "^1.4.2",
+    "nanoajax": "^0.4.3",
     "three": "^0.81.0",
     "tween.js": "^16.3.5",
     "utm-latlng": "^1.0.3"

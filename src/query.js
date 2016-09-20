@@ -9,7 +9,7 @@ import CubeContainer from './cubecontainer.js';
 import CubeBounds from './cubebounds.js';
 import Dictionary from './dictionary.js';
 import Pyrite from './pyrite.js';
-import Api from '../../actions/api.js';
+import Api from './api.js';
 
 class PyriteQuery {
   constructor(loader, config) {
@@ -21,12 +21,11 @@ class PyriteQuery {
     this.loader = loader;
     this.config = config;
     this.debug = false;
-    this.api = new Api();
   }
 
   loadMetadata(onLoad) {
     this.versionUrl = `${this.config.server}sets/${this.config.set}/${this.config.version}/`;
-    this.api.cachedGet(this.versionUrl, 'json').then((r) => {
+    Api.cachedGet(this.versionUrl, 'json').then((r) => {
       if (this.unloaded) {
         // We've unloaded, throw this response away
         return;
@@ -141,7 +140,6 @@ class PyriteQuery {
       this.DetailLevels = null;
     }
 
-    this.api = null;
     this.config = null;
     this.loader = null;
     this.unloaded = true;
@@ -158,7 +156,7 @@ class PyriteQuery {
           `/${dl.WorldBoundsMax.x},${dl.WorldBoundsMax.y},${dl.WorldBoundsMax.z}`;
         const cubesUrl = `${this.versionUrl}query/${dl.Name}/${maxboundingboxquery}`;
 
-        this.api.cachedGet(cubesUrl, 'json').then((r) => {
+        Api.cachedGet(cubesUrl, 'json').then((r) => {
           if (this.unloaded) {
             // We've unloaded, throw this response away
             return;
