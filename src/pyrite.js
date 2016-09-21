@@ -48,7 +48,12 @@ class Pyrite {
     this.loader = new PyriteLoader(this, this.config);
     this.loader.handleInitialCubesLoaded = this.handleInitialCubesLoaded.bind(this);
     this.loader.isUpgradingEnabled = this.isUpgradingEnabled.bind(this);
-    this.camera = new THREE.PerspectiveCamera(50, this.container.clientWidth / this.container.clientHeight, 1, 9000);
+    this.camera = new THREE.PerspectiveCamera(
+      50,
+      this.container.clientWidth / this.container.clientHeight,
+      1,
+      9000
+    );
     this.camera.updateProjectionMatrix();
     this.cameraRig.add(this.camera);
     this.resetCamera();
@@ -239,12 +244,10 @@ class Pyrite {
   start() {
     this.started = true;
     this.startTime = Date.now();
-    this.loader.load(this.cameraRig, this.handleLoadCompleted.bind(this));
+    this.loader.load(this.cameraRig, () => {
+      // TODO: Hanlde load completed
+    });
     this.nextAnimationRequestId = requestAnimationFrame(this.animate);
-  }
-
-  handleLoadCompleted() {
-    // TODO: Put camera somewhere the model can be seen
   }
 
   getNewRotationXY(position) {
