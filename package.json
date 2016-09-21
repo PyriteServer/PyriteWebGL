@@ -26,7 +26,6 @@
     "localforage": "^1.4.2",
     "nanoajax": "^0.4.3",
     "three": "^0.81.0",
-    "tween.js": "^16.3.5",
     "utm-latlng": "^1.0.3"
   },
   "devDependencies": {

@@ -41,18 +41,16 @@ class PyriteLoader {
     this.vf = new THREE.Frustum();
   }
 
-  load(camera, thingsThatNeedElevation, handleLoadCompleted) {
+  load(camera, handleLoadCompleted) {
     this.camera = camera;
-    this.thingsThatNeedElevation = thingsThatNeedElevation.slice(0);
     this.query.loadAll(() => {
       this.loadInitialCubes();
       handleLoadCompleted();
-    }, thingsThatNeedElevation);
+    });
   }
 
   unload() {
     delete this.camera;
-    this.thingsThatNeedElevation = null;
 
     delete this.pyrite;
     delete this.config;

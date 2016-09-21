@@ -8,9 +8,9 @@ class Config {
       'pyriteapi2.azureedge.net',
     ];
     // Config.server = 'http://pyrite.azurewebsites.net/';
-    this.version = 'V2';
+    this.version = 'V7';
     this.set = 'PerthNew';
-    this.lod = 4;
+    this.lod = 5;
     this.maxlod = 1;
     this.fmt = 'ctm';
     this.debug = 0;

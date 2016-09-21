@@ -145,7 +145,7 @@ class PyriteQuery {
     this.unloaded = true;
   }
 
-  loadAll(callback, thingsThatNeedElevation) {
+  loadAll(callback) {
     this.loadMetadata(() => {
       const vals = this.DetailLevels;
       let loadedLevels = 0;
@@ -218,106 +218,7 @@ class PyriteQuery {
 
           dl.fixWorldCoords();
 
-          const clonedThingsThatNeedElevation = thingsThatNeedElevation.slice(0);
           const halfWorldCubeScale = dl.WorldCubeScale.x / 2;
-
-          if (dlIndex === 0) {
-            for (let i = 0; i < clonedThingsThatNeedElevation.length; i += 1) {
-              // console.log(clonedThingsThatNeedElevation[i]);
-              if (this.loader.pyrite.modelConfig.markerYOffsets) {
-                const translateYValue = this.loader.pyrite.modelConfig.markerYOffsets[
-                  clonedThingsThatNeedElevation[i].TeeId ||
-                  clonedThingsThatNeedElevation[i].HoleId
-                ];
-                if (translateYValue) {
-                  // console.log(`Fixing ${clonedThingsThatNeedElevation[i].TeeId ||
-                  //  clonedThingsThatNeedElevation[i].HoleId} to ${translateYValue}`);
-                  clonedThingsThatNeedElevation[i].marker.position.y = translateYValue;
-                }
-              }
-            }
-          }
-
-          // // Look through all cubes to find which ones have markers in the same x,z range
-          // // Add markers to nearMarkers array (Created if it doesnt exist)
-          // // Add the cube to the nearCubes list in the marker (Created if it doesnt exist)
-          // dl.Cubes.forEach((cubeContainer) => {
-
-          //     for (let i = 0; i < clonedThingsThatNeedElevation.length; i += 1) {
-
-          //         if ((cubeContainer.cube.correctedWorldCoords.x - halfWorldCubeScale <
-          //         clonedThingsThatNeedElevation[i].marker.position.x) &&
-          //             (cubeContainer.cube.correctedWorldCoords.x + halfWorldCubeScale >
-          //             clonedThingsThatNeedElevation[i].marker.position.x)) {
-          //             if ((cubeContainer.cube.correctedWorldCoords.z - halfWorldCubeScale
-          //             < clonedThingsThatNeedElevation[i].marker.position.z) &&
-          //                 (
-          //                   cubeContainer.cube.correctedWorldCoords.z + halfWorldCubeScale
-          //                    >
-          //                   clonedThingsThatNeedElevation[i].marker.position.z
-          //                 )) {
-
-          //                 if (!clonedThingsThatNeedElevation[i].nearCubes) {
-          //                     clonedThingsThatNeedElevation[i].nearCubes = [];
-          //                 }
-
-          //                 if (!cubeContainer.nearMarkers) {
-          //                     cubeContainer.nearMarkers = [];
-          //                 }
-
-          //                 cubeContainer.nearMarkers.push(
-          //                   clonedThingsThatNeedElevation[i]
-          //                   );
-          //                 clonedThingsThatNeedElevation[i].nearCubes.push(cubeContainer);
-
-          //                 if (dlIndex === 0) {
-          //                     if (
-          //                       clonedThingsThatNeedElevation[i].marker.position.y >
-          //                       cubeContainer.cube.correctedWorldCoords.y +
-          //                       halfWorldCubeScale
-          //                       ) {
-          //                         clonedThingsThatNeedElevation[i].marker.position.y =
-          //                         cubeContainer.cube.correctedWorldCoords.y +
-          //                         (halfWorldCubeScale * 1.5);
-          //                         let translateYValue =
-          //                         this.loader.pyrite.modelConfig.markerYOffsets[
-          //                           clonedThingsThatNeedElevation[i].TeeId ||
-          //                           clonedThingsThatNeedElevation[i].HoleId
-          //                           ];
-          //                         if (translateYValue) {
-          //                             clonedThingsThatNeedElevation[i].marker.position.y
-          //                              = translateYValue;
-          //                             clonedThingsThatNeedElevation[i].yAdjusted = true;
-          //                         }
-          //                     }
-          //                 }
-
-          //                 clonedThingsThatNeedElevation.splice(i,1);
-          //                 i -= 1;
-          //             }
-          //         }
-          //     }
-          // });
-
-          // console.log(clonedThingsThatNeedElevation.length);
-
-          // if (dlIndex === 0) {
-          //     var hackFix = [];
-
-          //     clonedThingsThatNeedElevation.forEach((something) => {
-          //         if (!something.yAdjusted) {
-          //             hackFix.push(something);
-          //         } else {
-          //             if (hackFix.length > 0) {
-          //                 console.log('fixing ' + hackFix.length);
-          //                 hackFix.forEach((hack) => {
-          //                     hack.marker.position.y = something.marker.position.y;
-          //                 });
-          //                 hackFix = [];
-          //             }
-          //         }
-          //     });
-          // }
 
           // Only call the callback when all levels have been loaded
           loadedLevels += 1;
