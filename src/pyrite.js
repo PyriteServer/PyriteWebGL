@@ -286,7 +286,6 @@ class Pyrite {
   handleInitialCubesLoaded() {
     console.log(`InitialLoad Time ${Date.now() - this.startTime}`);
     if (this.lastNavigationTarget) {
-      this.moveCameraToHole(this.lastNavigationTarget);
       delete this.lastNavigationTarget;
     }
   }
