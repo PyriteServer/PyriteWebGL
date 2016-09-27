@@ -4,8 +4,22 @@
   "extends": "airbnb/base",
   "parser": "babel-eslint",
   "rules": {
-    "no-param-reassign": [2, {"props": false}],
-    "linebreak-style": ["off"]
+    "no-param-reassign": [
+      2,
+      {
+        "props": false
+      }
+    ],
+    "linebreak-style": [
+      "off"
+    ],
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": [
+          "**/test/*.js"
+        ]
+      }
+    ]
   }
 }
-

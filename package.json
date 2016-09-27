@@ -6,7 +6,7 @@
     "build": "babel ./src --out-dir ./lib --copy-files",
     "clean": "rimraf ./lib",
     "pretest": "npm run lint",
-    "test": "babel-node test/*.js",
+    "test": "babel-node test",
     "test:watch": "nodemon --exec npm test",
     "preversion": "npm test && npm run changelog",
     "version:auto": "npm version $(conventional-recommended-bump --preset=angular)",
