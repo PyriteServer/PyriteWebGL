@@ -1,5 +1,5 @@
 {
-  "name": "pyrite3d",
+  "name": "pyrite3dwebgl",
   "main": "./lib/pyrite.js",
   "scripts": {
     "lint": "eslint ./src ./test",
