@@ -34,6 +34,7 @@
     "babel-preset-es2015": "^6.3.13",
     "blue-tape": "^1.0.0",
     "conventional-changelog": "^1.1.0",
+    "conventional-changelog-cli": "^1.2.0",
     "conventional-recommended-bump": "^0.3.0",
     "cz-conventional-changelog": "^1.1.5",
     "eslint": "^3.5.0",
