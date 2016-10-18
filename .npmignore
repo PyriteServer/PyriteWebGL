@@ -1,5 +1,7 @@
 src/
 test/
+archive/
+example/
 *.log
 npm-debug.log*
 .env

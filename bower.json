@@ -1,0 +1,14 @@
+{
+  "name": "pyrite3dwebgl",
+  "main": "dist/pyrite.js",
+  "license": "MIT",
+  "ignore": [
+    "package.json",
+    "example"
+  ],
+  "keywords": [
+    "pyrite",
+    "pyrite3d",
+    "threejs"
+  ]
+}
