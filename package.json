@@ -1,0 +1,50 @@
+{
+  "name": "pyrite3dwebgl",
+  "main": "./lib/pyrite.js",
+  "scripts": {
+    "lint": "eslint ./src ./test",
+    "build": "babel ./src --out-dir ./lib --copy-files && npm run browserify",
+    "clean": "rimraf ./lib",
+    "pretest": "npm run lint",
+    "test": "babel-node test",
+    "test:watch": "nodemon --exec npm test",
+    "postversion": "git push && git push --tags",
+    "prerelease": "npm run build && npm run pretest && npm test",
+    "release": "npm publish",
+    "prepublish": "npm run build",
+    "browserify": "browserify ./src/pyrite.js -o dist/pyrite.js -t [ babelify --presets [ es2015 ] --plugins [ add-module-exports ] ] -s Pyrite"
+  },
+  "keywords": [],
+  "author": "Pyrite3d",
+  "license": "MIT",
+  "dependencies": {
+    "detect-browser": "^1.5.0",
+    "jquery": "^3.1.0",
+    "localforage": "^1.4.2",
+    "nanoajax": "^0.4.3",
+    "three": "^0.81.0",
+    "utm-latlng": "^1.0.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.4.0",
+    "babel-eslint": "^6.1.2",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-es2015": "^6.3.13",
+    "babelify": "^7.3.0",
+    "blue-tape": "^1.0.0",
+    "browserify": "^13.1.0",
+    "eslint": "^3.5.0",
+    "eslint-config-airbnb": "^11.1.0",
+    "eslint-plugin-import": "^1.15.0",
+    "eslint-plugin-jsx-a11y": "^2.2.2",
+    "eslint-plugin-react": "^6.2.2",
+    "nodemon": "^1.8.1",
+    "rimraf": "^2.5.0"
+  },
+  "version": "0.0.1",
+  "config": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PyriteServer/PyriteWebGL.git"
+  }
+}

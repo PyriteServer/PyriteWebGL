@@ -1,0 +1,24 @@
+<html>
+<head>
+    <title>pyrite3d weblg example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+    #pyrite-container {
+        outline: 1px solid #444;
+        width: 640px;
+        height: 400px;
+    }
+    </style>
+</head>
+<body>
+ <div id="pyrite-container"></div>
+ <script src="../dist/pyrite.js"></script>
+ <script>
+    var pyriteContainer = document.querySelector('#pyrite-container');
+    console.log(pyriteContainer);
+    var pyrite = new Pyrite(pyriteContainer);
+    pyrite.start(); 
+ </script>
+</body>
+</html>
